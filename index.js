@@ -9,3 +9,8 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Running at port 3000`);
 });
+
+(req, res) => {
+  res.send('Hello WOlrd');
+  d;
+};
