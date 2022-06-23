@@ -1,6 +1,6 @@
+// Gravity implementation
 const useGravity = (entity) => {
-  // console.log('Run gravity');
-  entity.velocity.y += 0.1;
+  entity.velocity.y += 0.25;
   entity.position.y += entity.velocity.y;
 };
 

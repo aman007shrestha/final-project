@@ -1,15 +1,17 @@
-import Entity from './Entity.js';
+import GenericObject from './GenericObject.js';
 import Sprite from './Sprite.js';
 import { useGravity } from './utils.js';
+import { globalObject } from './main.js';
 
-class Mario extends Entity {
+class Mario extends GenericObject {
   constructor(spritesheet, position_x, position_y, width, height) {
     let marioImg = new Sprite(spritesheet, 650, 5, 16, 16);
+    console.log('ma', marioImg);
     super(marioImg, 'mario', position_x, position_y, width, height);
-    this.velocity.set(0.8, 0);
+    this.velocity.set(2, 0);
     console.log(this.velocity);
     this.isJumping = false;
-    this.isJumping = false;
+    this.isBig = false;
     this.isGrounded = true;
     // Load sprites for animation
     this.movingDirection = 'rightWalk';
@@ -26,23 +28,11 @@ class Mario extends Entity {
     //   },
     // };
   }
-  draw(ctx) {
-    ctx.drawImage(
-      this.sprite.image,
-      this.sprite.sx,
-      this.sprite.sy,
-      this.sprite.sw,
-      this.sprite.sh,
-      this.position.x,
-      this.position.y,
-      this.width,
-      this.height
-    );
-  }
+
   update(ctx) {
-    this.checkCollision(ctx);
+    this.checkCollision(globalObject.ctx);
     useGravity(this);
-    this.draw(ctx);
+    this.draw(globalObject.ctx);
   }
   //@desc Responses to event listeners
   moveRight() {
@@ -55,16 +45,18 @@ class Mario extends Entity {
   }
   jump() {
     let currentFrame = 0;
-    let THRESHOLD = 30;
     this.isJumping = true;
     this.isGrounded = false;
-    this.velocity.y -= 3;
+    this.velocity.y -= 10;
   }
   // @desc check for collision update grounded and jumping boolean
   checkCollision(ctx) {
-    if (this.position.y + this.height >= 200 && this.velocity.y > 0) {
+    if (
+      this.position.y + this.height >= globalObject.canvas.height &&
+      this.velocity.y > 0
+    ) {
       this.velocity.y = 0;
-      this.position.y = 184;
+      this.position.y = globalObject.canvas.height - this.height;
       this.isGrounded = true;
       // load anim for standing
       this.isJumping = false;

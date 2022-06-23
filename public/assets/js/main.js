@@ -1,63 +1,84 @@
 import { preLoader } from './preload.js';
 import Mario from './Mario.js';
 import eventsInput from './events.js';
+// import BackGroundEntities from './backgroundLayers.js';
+import { CANVAS_WIDTH, CANVAS_HEIGHT, map } from './constants.js';
 
+import LevelConsumer from './LevelConsumer.js';
+let globalObject;
 let tilesImage;
 let castleImage;
 let assetImage;
 let cloudImage;
 let mountainImage;
 
+let level;
 const render = {
-  init(gameObj) {
-    gameObj.ctx.fillStyle = '#64acfc';
-    gameObj.ctx.fillRect(0, 0, 1600, 600);
-    let mario = gameObj.entities.mario;
-    mario.draw(gameObj.ctx);
+  init() {
+    globalObject.ctx.fillStyle = '#64acfc';
+    globalObject.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    let mario = globalObject.entities.mario;
+    mario.draw(globalObject.ctx);
   },
-  update(gameObj) {
-    gameObj.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-    gameObj.ctx.fillStyle = '#64acfc';
-    gameObj.ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-    gameObj.ctx.fillStyle = '#eee';
-    gameObj.ctx.fillRect(
-      0,
-      200,
-      gameObj.canvas.width,
-      gameObj.canvas.height - 200
-    );
-    gameObj.entities.mario.update(gameObj.ctx);
-    eventsInput.update(gameObj);
+  update() {
+    globalObject.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    globalObject.ctx.fillStyle = '#64acfc';
+    globalObject.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    level.update();
+    globalObject.entities.mario.update(globalObject.ctx);
+    eventsInput.update(globalObject);
   },
   reset() {},
 };
 
 class Game {
+  constructor() {}
   init() {
     const canvas = document.getElementById('main-game');
-    canvas.height = window.innerHeight;
-    canvas.width = window.innerWidth;
+    canvas.height = CANVAS_HEIGHT;
+    canvas.width = CANVAS_WIDTH;
     const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
     let entities = {};
-    let gameObj = {
+    globalObject = {
       ctx,
       canvas,
       entities,
     };
-    ctx.scale(2, 2);
-    gameObj.entities.mario = new Mario(assetImage, 175, 0, 16, 16);
-    render.init(gameObj);
+    globalObject.drawImagesOnCanvasFromSprite = function (
+      image,
+      sourceX,
+      sourceY,
+      sourceWidth,
+      sourceHeight,
+      position_x,
+      position_y,
+      width,
+      height
+    ) {
+      globalObject.ctx.drawImage(
+        image,
+        sourceX,
+        sourceY,
+        sourceWidth,
+        sourceHeight,
+        position_x,
+        position_y,
+        width,
+        height
+      );
+    };
+    console.log(globalObject);
+    // ctx.scale(2, 2);
+    level = new LevelConsumer(map);
+    globalObject.entities.mario = new Mario(assetImage, 175, 0, 60, 60);
+    render.init();
     eventsInput.init();
-
-    // eventsInput.init(gameObj.entities.mario);
-    this.update(gameObj);
+    this.update();
   }
-  update(gameObj) {
-    // game execution
-
+  update() {
     function play() {
-      render.update(gameObj);
-
+      render.update();
       requestAnimationFrame(play);
     }
     play();
@@ -79,3 +100,5 @@ preLoader().then(
     game.init();
   }
 );
+
+export { globalObject, tilesImage };
