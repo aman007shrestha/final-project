@@ -1,4 +1,5 @@
 import { Vector } from './Maths.js';
+import { globalObject } from './main.js';
 // @desc takes image off the spriteSheet along with name of object and the location of where to draw the image
 class GenericObject {
   constructor(sprite, name, position_x, position_y, width, height) {
@@ -10,7 +11,7 @@ class GenericObject {
     this.height = height;
   }
   draw(ctx) {
-    ctx.drawImage(
+    globalObject.drawImagesOnCanvasFromSprite(
       this.sprite.image,
       this.sprite.sx,
       this.sprite.sy,

@@ -12,6 +12,9 @@ export const PIPE_TOP_RIGHT_ID = 412;
 export const PIPE_BOTTOM_LEFT_ID = 421;
 export const PIPE_BOTTOM_RIGHT_ID = 422;
 export const TREASURE_ID = 5;
+export const TILE_WIDTH = 60;
+export const TILE_HEIGHT = 60;
+export const DEFAULT_LIVES = 5;
 export default {
   CANVAS_HEIGHT: 800,
 };

@@ -12,7 +12,7 @@ class Mario extends GenericObject {
     console.log(this.velocity);
     this.isJumping = false;
     this.isBig = false;
-    this.isGrounded = true;
+    this.isGrounded = false;
     // Load sprites for animation
     this.movingDirection = 'rightWalk';
     // this.animation = {
@@ -31,7 +31,10 @@ class Mario extends GenericObject {
 
   update(ctx) {
     this.checkCollision(globalObject.ctx);
-    useGravity(this);
+    if (!this.isGrounded) {
+      useGravity(this);
+    }
+
     this.draw(globalObject.ctx);
   }
   //@desc Responses to event listeners
@@ -61,6 +64,25 @@ class Mario extends GenericObject {
       // load anim for standing
       this.isJumping = false;
       return true;
+    }
+  }
+  checkBlockCollision(entity) {
+    if (
+      this.position.x <= entity.position.x + 60 &&
+      this.position.x + this.width >= entity.position.x &&
+      this.position.y <= entity.position.y + 60 &&
+      this.position.y + this.height >= entity.position.y
+    ) {
+      // alert('co');
+      this.isGrounded = true;
+      this.isJumping = false;
+      this.velocity.y = 0;
+      this.position.y = entity.position.y - 60 - 1;
+      // this.velocity.x = 0;
+      // this.position.x = entity.position.x - 1;
+    } else {
+      // this.isGrounded = false;
+      // this.isJumping = true;
     }
   }
 }

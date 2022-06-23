@@ -13,7 +13,6 @@ import { globalObject, tilesImage } from './main.js';
 class BlockObject {
   constructor({ position, elementId }) {
     this.position = position;
-
     this.elementId = elementId;
   }
   drawBlock = () => {
