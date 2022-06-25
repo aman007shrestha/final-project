@@ -6,10 +6,13 @@ import { globalObject } from './main.js';
 class Mario extends GenericObject {
   constructor(spritesheet, position_x, position_y, width, height) {
     let marioImg = new Sprite(spritesheet, 650, 5, 16, 16);
-    console.log('ma', marioImg);
     super(marioImg, 'mario', position_x, position_y, width, height);
     this.velocity.set(2, 0);
-    console.log(this.velocity);
+    this.width = 50;
+    this.tiles = [
+      Math.floor(this.position.x / 60),
+      Math.floor(this.position.y / 60),
+    ];
     this.isJumping = false;
     this.isBig = false;
     this.isGrounded = false;
@@ -29,12 +32,14 @@ class Mario extends GenericObject {
     // };
   }
 
-  update(ctx) {
-    this.checkCollision(globalObject.ctx);
+  update() {
     if (!this.isGrounded) {
       useGravity(this);
     }
-
+    this.tiles = [
+      Math.floor(this.position.x / 60),
+      Math.floor(this.position.y / 60),
+    ];
     this.draw(globalObject.ctx);
   }
   //@desc Responses to event listeners
@@ -43,46 +48,74 @@ class Mario extends GenericObject {
     this.position.x += this.velocity.x;
   }
   moveLeft() {
+    if (this.position.x <= 1) {
+      return;
+    }
     let currentFrame = 0;
     this.position.x -= this.velocity.x;
   }
   jump() {
     let currentFrame = 0;
+    this.velocity.y -= 11;
     this.isJumping = true;
     this.isGrounded = false;
-    this.velocity.y -= 10;
   }
-  // @desc check for collision update grounded and jumping boolean
-  checkCollision(ctx) {
-    if (
-      this.position.y + this.height >= globalObject.canvas.height &&
-      this.velocity.y > 0
-    ) {
-      this.velocity.y = 0;
-      this.position.y = globalObject.canvas.height - this.height;
-      this.isGrounded = true;
-      // load anim for standing
-      this.isJumping = false;
-      return true;
-    }
+  checkRectangularCollision(entity) {
+    return (
+      this.position.x < entity.position.x + entity.width &&
+      this.position.x + this.width > entity.position.x &&
+      this.position.y < entity.position.y + entity.height &&
+      this.position.y + this.height > entity.position.y
+    );
   }
   checkBlockCollision(entity) {
-    if (
-      this.position.x <= entity.position.x + 60 &&
-      this.position.x + this.width >= entity.position.x &&
-      this.position.y <= entity.position.y + 60 &&
-      this.position.y + this.height >= entity.position.y
-    ) {
-      // alert('co');
-      this.isGrounded = true;
-      this.isJumping = false;
-      this.velocity.y = 0;
-      this.position.y = entity.position.y - 60 - 1;
-      // this.velocity.x = 0;
-      // this.position.x = entity.position.x - 1;
-    } else {
-      // this.isGrounded = false;
-      // this.isJumping = true;
+    if (this.checkRectangularCollision(entity)) {
+      if (
+        entity.type === 'pipe' ||
+        entity.type === 'stone' ||
+        entity.type === 'brick' ||
+        entity.type === 'treasure' ||
+        entity.type === 'ground'
+      ) {
+        // bottom
+        if (
+          this.position.y > entity.position.y &&
+          this.velocity.y < 0 &&
+          this.position.x + this.width > entity.position.x
+        ) {
+          this.position.y = entity.position.y + entity.height;
+          this.velocity.y *= -1;
+          console.log('bottom called');
+          return;
+        }
+        // top
+        if (
+          this.position.y < entity.position.y &&
+          this.velocity.y >= 0 &&
+          this.position.x + this.width > entity.position.x
+        ) {
+          console.log('top called');
+          this.position.y = entity.position.y - this.height - 1;
+          this.velocity.y = 1;
+          this.isJumping = false;
+        }
+        // left
+        if (
+          this.position.x < entity.position.x &&
+          this.position.y >= entity.position.y
+        ) {
+          console.log('right  called');
+          this.position.x = entity.position.x - this.width;
+        }
+        // right
+        if (
+          this.position.x > entity.position.x &&
+          this.position.y >= entity.position.y
+        ) {
+          console.log('left');
+          this.position.x = entity.position.x + entity.width;
+        }
+      }
     }
   }
 }

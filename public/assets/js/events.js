@@ -33,8 +33,7 @@ let eventsInput = {
       console.log('Arrow Up');
     }
     if (this.isPressed('ArrowLeft')) {
-      mario.position.x -= mario.velocity.x;
-
+      mario.moveLeft();
       delete this.pressed.ArrowRight;
     }
   },

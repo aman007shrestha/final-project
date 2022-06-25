@@ -25,8 +25,8 @@ const render = {
     globalObject.ctx.fillStyle = '#64acfc';
     globalObject.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     level.update();
-    globalObject.entities.mario.update(globalObject.ctx);
     eventsInput.update(globalObject);
+    globalObject.entities.mario.update(globalObject.ctx);
   },
   reset() {},
 };
