@@ -1,10 +1,18 @@
 // @param accepts 2d array of entities id
 import BlockObject from './BlockObjects.js';
-import { TILE_HEIGHT, TILE_WIDTH, DEFAULT_LIVES } from './constants.js';
-import { assetImage, globalObject } from './main.js';
+import { Goomba } from './Enemy.js';
+import { assetImage, globalObject } from './Main.js';
 import Mario from './Mario.js';
-import eventsInput from './events.js';
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants.js';
+import eventsInput from './Events.js';
+import {
+  CANVAS_HEIGHT,
+  CANVAS_WIDTH,
+  TILE_HEIGHT,
+  TILE_WIDTH,
+  DEFAULT_LIVES,
+  GOOMBA_ID,
+} from './Constants.js';
+
 class LevelConsumer {
   constructor(levelMap) {
     this.lives = DEFAULT_LIVES;
@@ -14,12 +22,12 @@ class LevelConsumer {
   initObjects() {
     this.entities = [];
     this.enemies = [];
-    this.mario = new Mario(assetImage, 175, 0, 60, 60);
+    this.mario = new Mario(assetImage, 175, 0, TILE_WIDTH, TILE_HEIGHT);
     eventsInput.init();
     this.mario.draw(globalObject.ctx);
     this.levelMap.forEach((row, i) => {
       row.forEach((elementId, j) => {
-        if (elementId !== 0) {
+        if (elementId !== 0 && (elementId <= 10 || elementId > 400)) {
           this.entities.push(
             new BlockObject({
               position: {
@@ -29,17 +37,28 @@ class LevelConsumer {
               elementId,
             })
           );
+        } else if (elementId > 10 && elementId <= 20) {
+          if (elementId === GOOMBA_ID) {
+            this.enemies.push(
+              new Goomba({
+                x: TILE_WIDTH * j,
+                y: TILE_HEIGHT * i,
+              })
+            );
+          }
         }
       });
     });
+    this.entities.forEach((entity) => {
+      entity.initBlock();
+    });
   }
+
   update() {
     globalObject.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     globalObject.ctx.fillStyle = '#64acfc';
     globalObject.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     eventsInput.update(this.mario);
-    this.mario.update(globalObject.ctx);
-    let updatedEntities = [];
     let viewPortFraction;
     if (this.mario.position.x >= globalObject.canvas.width / 2) {
       this.mario.position.x -= 2;
@@ -48,31 +67,51 @@ class LevelConsumer {
       viewPortFraction = 0;
     }
     this.entities.forEach((blockObject) => {
-      if (blockObject.position.x > -60) {
-        updatedEntities.push(
-          new BlockObject({
-            position: {
-              x: blockObject.position.x - viewPortFraction,
-              y: blockObject.position.y,
-            },
-            elementId: blockObject.elementId,
-          })
-        );
+      if (blockObject.position.x > -TILE_WIDTH) {
+        blockObject.position.x = blockObject.position.x - viewPortFraction;
       }
-    });
-    this.entities = updatedEntities;
-    this.entities.forEach((entity) => {
-      // check collision only for visible range draw entity only for visible range
+      //draw entity only for visible range
       if (
-        entity.position.x > -60 &&
-        entity.position.x < globalObject.canvas.width
+        blockObject.position.x > -60 &&
+        blockObject.position.x < globalObject.canvas.width
       ) {
-        entity.drawBlock();
-        if (entity.position.x < globalObject.canvas.width / 2 + 60) {
-          this.mario.checkBlockCollision(entity);
+        blockObject.drawBlock();
+        if (
+          blockObject.position.x <
+          globalObject.canvas.width / 2 + TILE_WIDTH
+        ) {
+          this.mario.checkBlockCollision(blockObject);
         }
       }
     });
+    this.enemies.forEach((enemy) => {
+      if (enemy.position.x > -TILE_WIDTH) {
+        enemy.position.x = enemy.position.x - viewPortFraction;
+      }
+      if (
+        enemy.position.x > -TILE_WIDTH &&
+        enemy.position.x < globalObject.canvas.width
+      ) {
+        enemy.draw();
+        if (enemy.type === 'goomba') {
+          enemy.move(this.entities);
+        }
+      }
+      if (enemy.position.x < globalObject.canvas.width / 2 + TILE_WIDTH) {
+        if (this.mario.checkVerticalCollision(enemy)) {
+          console.log('enemyDead');
+          if (this.enemies.indexOf(enemy) > -1) {
+            this.enemies.splice(this.enemies.indexOf(enemy), 1);
+          }
+          return;
+        }
+        if (this.mario.checkHorizontalCollision(enemy)) {
+          console.log('Mario died');
+        }
+        return;
+      }
+    });
+    this.mario.update(globalObject.ctx);
   }
   reset() {
     this.entities = [];

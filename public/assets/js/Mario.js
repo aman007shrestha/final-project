@@ -1,14 +1,15 @@
-import GenericObject from './GenericObject.js';
+import GenericMovableObject from './GenericMovableObject.js';
 import Sprite from './Sprite.js';
-import { useGravity } from './utils.js';
-import { globalObject } from './main.js';
+import { useGravity } from './Utils.js';
+import { globalObject } from './Main.js';
+import { SPRITE_WIDTH, SPRITE_HEIGHT } from './Constants.js';
 
-class Mario extends GenericObject {
+class Mario extends GenericMovableObject {
   constructor(spritesheet, position_x, position_y, width, height) {
     let marioImg = new Sprite(spritesheet, 650, 5, 16, 16);
     super(marioImg, 'mario', position_x, position_y, width, height);
     this.velocity.set(2, 0);
-    this.height = 60;
+    this.isSpawning = false;
     this.tiles = [
       Math.floor(this.position.x / 60),
       Math.floor(this.position.y / 60),
@@ -66,66 +67,6 @@ class Mario extends GenericObject {
     this.velocity.y -= 12;
     this.isJumping = true;
     this.isGrounded = false;
-  }
-  checkRectangularCollision(entity) {
-    return (
-      this.position.x < entity.position.x + entity.width &&
-      this.position.x + this.width > entity.position.x &&
-      this.position.y < entity.position.y + entity.height &&
-      this.position.y + this.height > entity.position.y
-    );
-  }
-  checkBlockCollision(entity) {
-    if (this.checkRectangularCollision(entity)) {
-      if (
-        entity.type === 'pipe' ||
-        entity.type === 'stone' ||
-        entity.type === 'brick' ||
-        entity.type === 'treasure' ||
-        entity.type === 'ground'
-      ) {
-        // bottom
-        if (
-          this.position.y > entity.position.y &&
-          this.velocity.y < 0 &&
-          this.position.x + this.width > entity.position.x
-        ) {
-          this.position.y = entity.position.y + entity.height;
-          this.velocity.y *= -1;
-          console.log('bottom called');
-          return;
-        }
-        // left
-        if (
-          this.position.x < entity.position.x &&
-          this.position.y >= entity.position.y
-        ) {
-          console.log('right  called');
-          this.position.x = entity.position.x - this.width;
-          return;
-        }
-        // right
-        if (
-          this.position.x > entity.position.x &&
-          this.position.y >= entity.position.y
-        ) {
-          console.log('left');
-          this.position.x = entity.position.x + entity.width;
-          return;
-        }
-        // top
-        if (
-          this.position.y < entity.position.y &&
-          this.velocity.y >= 0 &&
-          this.position.x + this.width > entity.position.x
-        ) {
-          console.log('top called');
-          this.position.y = entity.position.y - this.height - 1;
-          this.velocity.y = 1;
-          this.isJumping = false;
-        }
-      }
-    }
   }
 }
 export default Mario;

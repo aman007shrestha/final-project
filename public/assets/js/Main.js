@@ -1,6 +1,6 @@
-import { preLoader } from './preload.js';
+import { preLoader } from './Preload.js';
 // import BackGroundEntities from './backgroundLayers.js';
-import { CANVAS_WIDTH, CANVAS_HEIGHT, map } from './constants.js';
+import { CANVAS_WIDTH, CANVAS_HEIGHT, map } from './Constants.js';
 
 import LevelConsumer from './LevelConsumer.js';
 let globalObject;
