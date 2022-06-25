@@ -1,6 +1,4 @@
 import { preLoader } from './preload.js';
-import Mario from './Mario.js';
-import eventsInput from './events.js';
 // import BackGroundEntities from './backgroundLayers.js';
 import { CANVAS_WIDTH, CANVAS_HEIGHT, map } from './constants.js';
 
@@ -13,23 +11,6 @@ let cloudImage;
 let mountainImage;
 
 let level;
-const render = {
-  init() {
-    globalObject.ctx.fillStyle = '#64acfc';
-    globalObject.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    let mario = globalObject.entities.mario;
-    mario.draw(globalObject.ctx);
-  },
-  update() {
-    globalObject.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    globalObject.ctx.fillStyle = '#64acfc';
-    globalObject.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    level.update();
-    eventsInput.update(globalObject);
-    globalObject.entities.mario.update(globalObject.ctx);
-  },
-  reset() {},
-};
 
 class Game {
   constructor() {}
@@ -38,13 +19,16 @@ class Game {
     canvas.height = CANVAS_HEIGHT;
     canvas.width = CANVAS_WIDTH;
     const ctx = canvas.getContext('2d');
-    ctx.imageSmoothingEnabled = false;
     let entities = {};
     globalObject = {
       ctx,
       canvas,
       entities,
     };
+    globalObject.ctx.fillStyle = '#64acfc';
+    globalObject.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctx.imageSmoothingEnabled = false;
+
     globalObject.drawImagesOnCanvasFromSprite = function (
       image,
       sourceX,
@@ -68,17 +52,13 @@ class Game {
         height
       );
     };
-    console.log(globalObject);
-    // ctx.scale(2, 2);
     level = new LevelConsumer(map);
-    globalObject.entities.mario = new Mario(assetImage, 175, 0, 60, 60);
-    render.init();
-    eventsInput.init();
+    globalObject.level = level;
     this.update();
   }
   update() {
     function play() {
-      render.update();
+      level.update();
       requestAnimationFrame(play);
     }
     play();
@@ -101,4 +81,4 @@ preLoader().then(
   }
 );
 
-export { globalObject, tilesImage };
+export { globalObject, tilesImage, assetImage };

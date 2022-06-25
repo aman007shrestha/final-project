@@ -8,7 +8,7 @@ class Mario extends GenericObject {
     let marioImg = new Sprite(spritesheet, 650, 5, 16, 16);
     super(marioImg, 'mario', position_x, position_y, width, height);
     this.velocity.set(2, 0);
-    this.width = 50;
+    this.height = 60;
     this.tiles = [
       Math.floor(this.position.x / 60),
       Math.floor(this.position.y / 60),
@@ -40,12 +40,19 @@ class Mario extends GenericObject {
       Math.floor(this.position.x / 60),
       Math.floor(this.position.y / 60),
     ];
+    if (this.position.y + this.height > globalObject.canvas.height) {
+      globalObject.level.lives -= 1;
+      if (globalObject.level.lives <= 0) {
+        alert('Game Over');
+      }
+      globalObject.level.initObjects();
+    }
     this.draw(globalObject.ctx);
   }
   //@desc Responses to event listeners
   moveRight() {
     let currentFrame = 0;
-    this.position.x += this.velocity.x;
+    this.position.x += this.velocity.x * 0.9;
   }
   moveLeft() {
     if (this.position.x <= 1) {
@@ -56,7 +63,7 @@ class Mario extends GenericObject {
   }
   jump() {
     let currentFrame = 0;
-    this.velocity.y -= 11;
+    this.velocity.y -= 12;
     this.isJumping = true;
     this.isGrounded = false;
   }
@@ -88,6 +95,24 @@ class Mario extends GenericObject {
           console.log('bottom called');
           return;
         }
+        // left
+        if (
+          this.position.x < entity.position.x &&
+          this.position.y >= entity.position.y
+        ) {
+          console.log('right  called');
+          this.position.x = entity.position.x - this.width;
+          return;
+        }
+        // right
+        if (
+          this.position.x > entity.position.x &&
+          this.position.y >= entity.position.y
+        ) {
+          console.log('left');
+          this.position.x = entity.position.x + entity.width;
+          return;
+        }
         // top
         if (
           this.position.y < entity.position.y &&
@@ -98,22 +123,6 @@ class Mario extends GenericObject {
           this.position.y = entity.position.y - this.height - 1;
           this.velocity.y = 1;
           this.isJumping = false;
-        }
-        // left
-        if (
-          this.position.x < entity.position.x &&
-          this.position.y >= entity.position.y
-        ) {
-          console.log('right  called');
-          this.position.x = entity.position.x - this.width;
-        }
-        // right
-        if (
-          this.position.x > entity.position.x &&
-          this.position.y >= entity.position.y
-        ) {
-          console.log('left');
-          this.position.x = entity.position.x + entity.width;
         }
       }
     }

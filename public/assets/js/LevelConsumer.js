@@ -1,17 +1,22 @@
 // @param accepts 2d array of entities id
 import BlockObject from './BlockObjects.js';
 import { TILE_HEIGHT, TILE_WIDTH, DEFAULT_LIVES } from './constants.js';
-import { globalObject } from './main.js';
+import { assetImage, globalObject } from './main.js';
+import Mario from './Mario.js';
+import eventsInput from './events.js';
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants.js';
 class LevelConsumer {
   constructor(levelMap) {
-    this.entities = [];
-    this.enemies = [];
     this.lives = DEFAULT_LIVES;
     this.levelMap = levelMap;
     this.initObjects();
   }
   initObjects() {
     this.entities = [];
+    this.enemies = [];
+    this.mario = new Mario(assetImage, 175, 0, 60, 60);
+    eventsInput.init();
+    this.mario.draw(globalObject.ctx);
     this.levelMap.forEach((row, i) => {
       row.forEach((elementId, j) => {
         if (elementId !== 0) {
@@ -29,13 +34,15 @@ class LevelConsumer {
     });
   }
   update() {
+    globalObject.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    globalObject.ctx.fillStyle = '#64acfc';
+    globalObject.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    eventsInput.update(this.mario);
+    this.mario.update(globalObject.ctx);
     let updatedEntities = [];
     let viewPortFraction;
-    if (
-      globalObject.entities.mario.position.x >=
-      globalObject.canvas.width / 2
-    ) {
-      globalObject.entities.mario.position.x -= 2;
+    if (this.mario.position.x >= globalObject.canvas.width / 2) {
+      this.mario.position.x -= 2;
       viewPortFraction = 2;
     } else {
       viewPortFraction = 0;
@@ -62,10 +69,14 @@ class LevelConsumer {
       ) {
         entity.drawBlock();
         if (entity.position.x < globalObject.canvas.width / 2 + 60) {
-          globalObject.entities.mario.checkBlockCollision(entity);
+          this.mario.checkBlockCollision(entity);
         }
       }
     });
+  }
+  reset() {
+    this.entities = [];
+    this.enemies = [];
   }
 }
 export default LevelConsumer;

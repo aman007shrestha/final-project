@@ -10,7 +10,7 @@ class GenericObject {
     this.width = width;
     this.height = height;
   }
-  draw(ctx) {
+  draw() {
     globalObject.drawImagesOnCanvasFromSprite(
       this.sprite.image,
       this.sprite.sx,

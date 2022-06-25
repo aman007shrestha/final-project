@@ -15,8 +15,8 @@ let eventsInput = {
       delete this.pressed[e.code];
     });
   },
-  update(gameObj) {
-    let mario = gameObj.entities.mario;
+  update(marioObject) {
+    let mario = marioObject;
     if (this.isPressed('ArrowUp')) {
       if (this.jumpable) {
         if (!mario.isJumping) {
@@ -30,7 +30,6 @@ let eventsInput = {
       delete this.pressed.ArrowLeft;
     }
     if (this.isPressed('ArrowDown')) {
-      console.log('Arrow Up');
     }
     if (this.isPressed('ArrowLeft')) {
       mario.moveLeft();
