@@ -25,6 +25,7 @@ class GenericMovableObject {
     );
   }
   //@desc Rectangle collision with mario & (block || coin || Powerup || Enemy)
+
   checkRectangularCollision(entity) {
     return (
       this.position.x < entity.position.x + entity.width &&

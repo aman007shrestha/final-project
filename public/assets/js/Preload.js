@@ -7,19 +7,28 @@ const loadImage = (url) =>
   });
 // @param: loads image prior to game init
 const preLoader = () => {
-  const imagesSource = ['tiles', 'castle', 'clouds', 'mountain', 'spritesheet'];
+  const imagesSource = [
+    'tiles',
+    'castle',
+    'clouds',
+    'mountain',
+    'spritesheet',
+    'mario',
+  ];
   let imageSrc = imagesSource.map((image) => `./assets/image/${image}.png`);
   const loadTiles = loadImage(imageSrc[0]);
   const loadCastle = loadImage(imageSrc[1]);
   const loadCloud = loadImage(imageSrc[2]);
   const loadMountain = loadImage(imageSrc[3]);
   const loadSpriteSheet = loadImage(imageSrc[4]);
+  const marioImg = loadImage(imageSrc[5]);
   return Promise.all([
     loadTiles,
     loadCastle,
     loadCloud,
     loadMountain,
     loadSpriteSheet,
+    marioImg,
   ]);
 };
 export { preLoader };

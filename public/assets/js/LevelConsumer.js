@@ -50,14 +50,14 @@ class LevelConsumer {
       });
     });
     this.entities.forEach((entity) => {
-      entity.initBlock();
+      entity.initBlock(globalObject.ctx);
     });
   }
 
   update() {
     globalObject.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    globalObject.ctx.fillStyle = '#64acfc';
-    globalObject.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    // globalObject.ctx.fillStyle = '#64acfc';
+    // globalObject.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     eventsInput.update(this.mario);
     let viewPortFraction;
     if (this.mario.position.x >= globalObject.canvas.width / 2) {
@@ -75,7 +75,7 @@ class LevelConsumer {
         blockObject.position.x > -60 &&
         blockObject.position.x < globalObject.canvas.width
       ) {
-        blockObject.drawBlock();
+        blockObject.drawBlock(globalObject.ctx);
         if (
           blockObject.position.x <
           globalObject.canvas.width / 2 + TILE_WIDTH

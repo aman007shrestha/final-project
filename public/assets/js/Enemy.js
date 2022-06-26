@@ -1,7 +1,7 @@
 import GenericMovableObject from './GenericMovableObject.js';
 import Sprite from './Sprite.js';
 import { TILE_WIDTH, TILE_HEIGHT } from './Constants.js';
-import { assetImage } from './Main.js';
+import { assetImage, globalObject } from './Main.js';
 
 class Enemy extends GenericMovableObject {
   constructor(enemyImg, name, position_x, position_y, width, height) {
@@ -16,9 +16,15 @@ class Goomba extends Enemy {
     this.velocity.set(1.5, 0);
     this.isGrounded = false;
     this.type = 'goomba';
+    console.log(this);
+    this.spriteSource = [115, 131];
   }
   move(blocks) {
     this.position.x += this.velocity.x;
+    if (globalObject.frame % 15 === 0) {
+      let currentSx = (globalObject.frame / 5) % this.spriteSource.length;
+      this.sprite.sx = this.spriteSource[currentSx];
+    }
     blocks.forEach((block) => {
       if (
         block.position.x - this.position < TILE_WIDTH ||

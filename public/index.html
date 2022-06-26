@@ -9,7 +9,19 @@
     <link rel="stylesheet" href="./assets/css/style.css" />
   </head>
   <body>
-    <canvas id="main-game"></canvas>
+    <div class="preloader">
+      <div class="spinner"></div>
+    </div>
+    <div class="container">
+      <canvas id="main-game"></canvas>
+      <div class="map__editor">
+        <form class="editor__input">
+          <label for="editor__width">Width of map</label>
+          <input type="Number" id="editor__width" />
+          <button class="width__submit">submit</button>
+        </form>
+      </div>
+    </div>
   </body>
   <script src="./assets/js/Preload.js" type="module" defer></script>
   <script src="./assets/js/Main.js" type="module"></script>

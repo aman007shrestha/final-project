@@ -1,63 +1,68 @@
 import { preLoader } from './Preload.js';
-// import BackGroundEntities from './backgroundLayers.js';
-import { CANVAS_WIDTH, CANVAS_HEIGHT, map } from './Constants.js';
-
+import { map } from './Constants.js';
 import LevelConsumer from './LevelConsumer.js';
-let globalObject;
+import Selectors from './DomSelector.js';
+import globalObject from './GlobalObect.js';
+import MapEditor from './MapEditor.js';
 let tilesImage;
 let castleImage;
 let assetImage;
 let cloudImage;
 let mountainImage;
-
 let level;
+let playerName;
+
+class HomeScreen {
+  constructor(marioImg) {
+    globalObject.canvas.style.display = 'none';
+    this.intro = document.createElement('div');
+    this.intro.classList.add('intro');
+    const introImg = document.createElement('img');
+    introImg.src = marioImg.src;
+    introImg.classList.add('intro--img');
+    this.intro.appendChild(introImg);
+    const buttonsWrapper = document.createElement('div');
+    buttonsWrapper.classList.add('intro--buttons');
+    buttonsWrapper.style.display = 'flex';
+    this.playButton = document.createElement('button');
+    this.playButton.innerHTML = 'Play';
+    buttonsWrapper.appendChild(this.playButton);
+    this.savedLevels = document.createElement('button');
+    this.savedLevels.innerHTML = 'Saved Level';
+    buttonsWrapper.appendChild(this.savedLevels);
+    this.createMap = document.createElement('button');
+    this.createMap.innerHTML = 'create map';
+    buttonsWrapper.appendChild(this.createMap);
+    this.intro.appendChild(buttonsWrapper);
+    Selectors.containerSelector.appendChild(this.intro);
+    this.defineEvents();
+  }
+  defineEvents() {
+    this.playButton.addEventListener('click', () => {
+      this.intro.style.display = 'none';
+      globalObject.canvas.style.display = 'block';
+      const game = new Game();
+      game.init();
+    });
+    this.createMap.addEventListener('click', () => {
+      this.intro.style.display = 'none';
+      // globalObject.canvas.style.display = 'block';
+      Selectors.mapEditor.style.display = 'flex';
+      new MapEditor();
+    });
+  }
+}
 
 class Game {
   constructor() {}
   init() {
-    const canvas = document.getElementById('main-game');
-    canvas.height = CANVAS_HEIGHT;
-    canvas.width = CANVAS_WIDTH;
-    const ctx = canvas.getContext('2d');
-    let entities = {};
-    globalObject = {
-      ctx,
-      canvas,
-      entities,
-    };
-    globalObject.ctx.fillStyle = '#64acfc';
-    globalObject.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    ctx.imageSmoothingEnabled = false;
-
-    globalObject.drawImagesOnCanvasFromSprite = function (
-      image,
-      sourceX,
-      sourceY,
-      sourceWidth,
-      sourceHeight,
-      position_x,
-      position_y,
-      width,
-      height
-    ) {
-      globalObject.ctx.drawImage(
-        image,
-        sourceX,
-        sourceY,
-        sourceWidth,
-        sourceHeight,
-        position_x,
-        position_y,
-        width,
-        height
-      );
-    };
     level = new LevelConsumer(map);
     globalObject.level = level;
     this.update();
   }
   update() {
     function play() {
+      globalObject.frame += 1;
       level.update();
       requestAnimationFrame(play);
     }
@@ -70,14 +75,21 @@ class Game {
 
 // @desc loads images from promises assigns images to global variable initializes Game
 preLoader().then(
-  ([tilesSprite, castleSprite, cloudSprite, mountainSprite, assetsSprite]) => {
+  ([
+    tilesSprite,
+    castleSprite,
+    cloudSprite,
+    mountainSprite,
+    assetsSprite,
+    marioImg,
+  ]) => {
     tilesImage = tilesSprite;
     castleImage = castleSprite;
     cloudImage = cloudSprite;
     mountainImage = mountainSprite;
     assetImage = assetsSprite;
-    const game = new Game();
-    game.init();
+    Selectors.preloaderSelector.style.display = 'none';
+    new HomeScreen(marioImg);
   }
 );
 

@@ -1,5 +1,110 @@
+@import url('./variable.css');
+
 #main-game {
   /* width: 800px;
   height: 400px; */
   border: 2px solid black;
+}
+
+.preloader {
+  background-color: var(--clr-black);
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container {
+  max-width: 1400px;
+  min-height: 800px;
+  margin: auto;
+  border: 2px solid black;
+  background-color: var(--sky-color);
+  display: flex;
+  justify-content: center;
+
+  position: relative;
+}
+/* .intro {
+  height: 100vh;
+  width: 100vw;
+} */
+.intro--img {
+  height: auto;
+  max-width: 300px;
+  margin: auto;
+  border: 2px solid black;
+}
+.intro--buttons {
+  display: flex;
+  border: 2px solid black;
+  justify-content: center;
+  gap: 200px;
+}
+.intro--buttons button {
+  padding: 10px 20px;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+}
+.spinner {
+  border: 15px solid var(--clr-black);
+  border-top: 10px solid var(--sky-color);
+  border-bottom: 10px solid var(--sky-color);
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 1.5s linear infinite;
+}
+.map__editor {
+  max-width: 1400px;
+  display: none;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: 100px;
+  position: relative;
+  width: 1200px;
+  align-items: center;
+}
+.editor__input {
+}
+.editor-canvas {
+  background-color: var(--sky-color);
+  position: relative;
+}
+.nav__button {
+  position: absolute;
+  top: 50%;
+  right: -2%;
+  transform: translateY(-50%);
+  font-size: 60px;
+  cursor: pointer;
+  font-weight: 600;
+  width: 50px;
+  background-color: transparent;
+  border: none;
+  color: #222;
+}
+.button--left {
+  left: -2%;
+}
+.tiles-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+.entities {
+  height: 40px;
+  width: 40px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

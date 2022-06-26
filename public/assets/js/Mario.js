@@ -41,7 +41,9 @@ class Mario extends GenericMovableObject {
       Math.floor(this.position.x / 60),
       Math.floor(this.position.y / 60),
     ];
-    if (this.position.y + this.height > globalObject.canvas.height) {
+    if (this.position.y > globalObject.canvas.height) {
+      console.log(this.position.y);
+      console.log(globalObject.canvas.height);
       globalObject.level.lives -= 1;
       if (globalObject.level.lives <= 0) {
         alert('Game Over');
@@ -53,7 +55,7 @@ class Mario extends GenericMovableObject {
   //@desc Responses to event listeners
   moveRight() {
     let currentFrame = 0;
-    this.position.x += this.velocity.x * 0.9;
+    this.position.x += this.velocity.x;
   }
   moveLeft() {
     if (this.position.x <= 1) {
