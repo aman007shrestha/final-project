@@ -1,4 +1,4 @@
-export const CANVAS_HEIGHT = 720;
+export const CANVAS_HEIGHT = 600;
 export const CANVAS_WIDTH = 1200;
 
 export const PRESSED = 'PRESSED';
@@ -12,17 +12,17 @@ export const PIPE_TOP_RIGHT_ID = 412;
 export const PIPE_BOTTOM_LEFT_ID = 421;
 export const PIPE_BOTTOM_RIGHT_ID = 422;
 export const TREASURE_ID = 5;
-export const TILE_WIDTH = 60;
-export const TILE_HEIGHT = 60;
+export const TILE_WIDTH = 40;
+export const TILE_HEIGHT = 40;
 export const DEFAULT_LIVES = 5;
 export const SPRITE_WIDTH = 16;
 export const SPRITE_HEIGHT = 16;
 export const GOOMBA_ID = 11;
 export const MAP_TILE_SIZE = 40;
 export const EDITOR_SELECTOR_TILE_WIDTH = 40;
-export const EDITOR_CANVAS_HEIGHT = 400;
+export const EDITOR_CANVAS_HEIGHT = 600;
 export const EDITOR_CANVAS_WIDTH = 800;
-export const ROWS_OF_TILES = 10;
+export const ROWS_OF_TILES = 15;
 export const LEFT = 'left';
 export const RIGHT = 'right';
 export const RIGHT_SCROLL_OFFSET = 400;
@@ -30,6 +30,27 @@ export default {
   CANVAS_HEIGHT: 800,
 };
 export const map = [
+  [
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  ],
+  [
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  ],
+  [
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  ],
   [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

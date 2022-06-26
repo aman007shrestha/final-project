@@ -66,7 +66,7 @@ class Mario extends GenericMovableObject {
   }
   jump() {
     let currentFrame = 0;
-    this.velocity.y -= 12;
+    this.velocity.y -= 9;
     this.isJumping = true;
     this.isGrounded = false;
   }

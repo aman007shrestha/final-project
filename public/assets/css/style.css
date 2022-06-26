@@ -21,16 +21,22 @@
   min-height: 800px;
   margin: auto;
   border: 2px solid black;
-  background-color: var(--sky-color);
+  background-color: #0f0e13;
+  background-image: radial-gradient(
+      at 0% 0%,
+      hsla(253, 16%, 7%, 1) 0,
+      transparent 50%
+    ),
+    radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 1) 0, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 1) 0, transparent 50%);
   display: flex;
   justify-content: center;
 
   position: relative;
 }
-/* .intro {
-  height: 100vh;
-  width: 100vw;
-} */
+.intro {
+  filter: blur(10px);
+}
 .intro--img {
   height: auto;
   max-width: 300px;
@@ -48,6 +54,63 @@
   border: none;
   outline: none;
   border-radius: 10px;
+}
+.name__form {
+  position: absolute;
+  padding: 40px;
+  top: 50%;
+  z-index: 2;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  transform: translate(-50%, -50%);
+  background: rgb(39, 51, 89, 0.4);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+.name__input {
+  border: none;
+  outline: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 18px;
+  color: white;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.name__submit {
+  outline: none;
+  padding: 10px 5px;
+  width: 100px;
+  margin: auto;
+  margin-top: 20px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.notification {
+  position: absolute;
+  padding: 15px 20px;
+  font-size: 18px;
+  right: 10px;
+  top: 10px;
+  min-width: 250px;
+  color: rgba(238, 225, 225, 0.7);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  backdrop-filter: blur(15px);
+  display: none;
+  animation: display 0.25s ease;
 }
 .spinner {
   border: 15px solid var(--clr-black);

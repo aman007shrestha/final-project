@@ -14,6 +14,7 @@ let playerName;
 
 class HomeScreen {
   constructor(marioImg) {
+    this.handlePlayerInfo();
     globalObject.canvas.style.display = 'none';
     this.intro = document.createElement('div');
     this.intro.classList.add('intro');
@@ -39,16 +40,52 @@ class HomeScreen {
   }
   defineEvents() {
     this.playButton.addEventListener('click', () => {
+      if (!globalObject.playerName) {
+        Selectors.notificationSelector.innerHTML = 'Input Player Name first';
+        Selectors.notificationSelector.style.display = 'block';
+        setTimeout(() => {
+          Selectors.notificationSelector.style.display = 'none';
+        }, 3000);
+        return;
+      }
+
       this.intro.style.display = 'none';
       globalObject.canvas.style.display = 'block';
       const game = new Game();
       game.init();
     });
     this.createMap.addEventListener('click', () => {
+      if (!globalObject.playerName) {
+        Selectors.notificationSelector.innerHTML = 'Input Player Name first';
+        Selectors.notificationSelector.style.display = 'block';
+        setTimeout(() => {
+          Selectors.notificationSelector.style.display = 'none';
+        }, 3000);
+        return;
+      }
       this.intro.style.display = 'none';
       // globalObject.canvas.style.display = 'block';
       Selectors.mapEditor.style.display = 'flex';
       new MapEditor();
+    });
+  }
+  handlePlayerInfo() {
+    Selectors.nameSubmitSelector.addEventListener('click', (e) => {
+      e.preventDefault();
+      const playerName = Selectors.playerNameSelector.value;
+      if (playerName.length < 3) {
+        Selectors.notificationSelector.innerHTML =
+          'Name cannot be less than 3 character';
+        Selectors.notificationSelector.style.display = 'block';
+        setTimeout(() => {
+          Selectors.notificationSelector.style.display = 'none';
+        }, 3000);
+        return;
+      }
+      this.intro.style.filter = 'blur(0px)';
+      globalObject.playerName = playerName;
+      console.log(globalObject.playerName);
+      Selectors.nameFormSelector.style.display = 'none';
     });
   }
 }
