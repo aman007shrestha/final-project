@@ -4,7 +4,7 @@ import LevelConsumer from './LevelConsumer.js';
 import Selectors from './DomSelector.js';
 import globalObject from './GlobalObect.js';
 import MapEditor from './MapEditor.js';
-import SavedLevel from './SavedLevel.js';
+import SavedLevel from './SavedLevels.js';
 import { notification } from './Utils.js';
 let tilesImage;
 let castleImage;
@@ -49,8 +49,7 @@ class HomeScreen {
       }
       this.intro.style.display = 'none';
       globalObject.canvas.style.display = 'block';
-      const game = new Game();
-      game.init();
+      new Game(map);
     });
 
     this.createMap.addEventListener('click', () => {
@@ -69,6 +68,8 @@ class HomeScreen {
         return;
       }
       this.intro.style.display = 'none';
+      Selectors.savedLevel.style.display = 'flex';
+      new SavedLevel();
     });
   }
 
@@ -94,9 +95,10 @@ class HomeScreen {
 }
 
 class Game {
-  constructor() {}
-  init() {
+  constructor(map) {
+    globalObject.canvas.style.display = 'block';
     level = new LevelConsumer(map);
+
     globalObject.level = level;
     this.update();
   }
@@ -138,4 +140,4 @@ preLoader()
     new HomeScreen(marioImg);
   });
 
-export { globalObject, tilesImage, assetImage };
+export { globalObject, tilesImage, assetImage, Game };
