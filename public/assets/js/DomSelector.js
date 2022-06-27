@@ -9,5 +9,8 @@ const Selectors = {
   widthSelector: document.querySelector('.width__submit'),
   widthInput: document.getElementById('editor__width'),
   mapEditor: document.querySelector('.map__editor'),
+  clearMap: document.querySelector('.clear__map'),
+  saveMap: document.querySelector('.save__map'),
+  savedLevel: document.querySelector('.saved__levels'),
 };
 export default Selectors;

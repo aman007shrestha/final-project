@@ -21,16 +21,22 @@
           class="name__input"
           id="player-name"
         />
-        <button class="name__submit">submit</button>
+        <button class="btn name__submit">submit</button>
       </form>
       <canvas id="main-game"></canvas>
       <div class="map__editor">
-        <form class="editor__input">
-          <label for="editor__width">Width of map</label>
-          <input type="Number" id="editor__width" />
-          <button class="width__submit">submit</button>
-        </form>
+        <div class="editor__top">
+          <button class="btn">Main Menu</button>
+          <form class="editor__input">
+            <label for="editor__width">Width of map</label>
+            <input type="Number" id="editor__width" />
+            <button class="width__submit">submit</button>
+          </form>
+          <button class="btn save__map">Save Map</button>
+          <button class="btn clear__map">Clear Map</button>
+        </div>
       </div>
+      <div class="saved__levels">Hello World</div>
     </div>
   </body>
   <script src="./assets/js/Preload.js" type="module" defer></script>

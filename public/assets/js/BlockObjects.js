@@ -28,6 +28,10 @@ class BlockObject {
   }
   initBlock = (ctx) => {
     switch (this.elementId) {
+      case 0:
+        this.drawBlock(ctx, this.elementId);
+        break;
+
       case GROUND_ID:
         this.type = 'ground';
         this.spriteCoordinates = [0, 0, SPRITE_WIDTH, SPRITE_HEIGHT];
@@ -71,7 +75,17 @@ class BlockObject {
         break;
     }
   };
-  drawBlock(ctx) {
+  drawBlock(ctx, element) {
+    if (element === 0) {
+      ctx.fillStyle = '#87ceeb';
+      ctx.fillRect(
+        this.position.x + 1,
+        this.position.y + 1,
+        this.width - 1,
+        this.height - 1
+      );
+      return;
+    }
     this.frame += 1;
     if (this.type === 'treasure') {
       if (!this.isOpen) {

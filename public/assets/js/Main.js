@@ -4,6 +4,8 @@ import LevelConsumer from './LevelConsumer.js';
 import Selectors from './DomSelector.js';
 import globalObject from './GlobalObect.js';
 import MapEditor from './MapEditor.js';
+import SavedLevel from './SavedLevel.js';
+import { notification } from './Utils.js';
 let tilesImage;
 let castleImage;
 let assetImage;
@@ -38,37 +40,38 @@ class HomeScreen {
     Selectors.containerSelector.appendChild(this.intro);
     this.defineEvents();
   }
+
   defineEvents() {
     this.playButton.addEventListener('click', () => {
       if (!globalObject.playerName) {
-        Selectors.notificationSelector.innerHTML = 'Input Player Name first';
-        Selectors.notificationSelector.style.display = 'block';
-        setTimeout(() => {
-          Selectors.notificationSelector.style.display = 'none';
-        }, 3000);
+        notification('Input Player Name first');
         return;
       }
-
       this.intro.style.display = 'none';
       globalObject.canvas.style.display = 'block';
       const game = new Game();
       game.init();
     });
+
     this.createMap.addEventListener('click', () => {
       if (!globalObject.playerName) {
-        Selectors.notificationSelector.innerHTML = 'Input Player Name first';
-        Selectors.notificationSelector.style.display = 'block';
-        setTimeout(() => {
-          Selectors.notificationSelector.style.display = 'none';
-        }, 3000);
+        notification('Input Player Name first');
         return;
       }
       this.intro.style.display = 'none';
-      // globalObject.canvas.style.display = 'block';
       Selectors.mapEditor.style.display = 'flex';
       new MapEditor();
     });
+
+    this.savedLevels.addEventListener('click', () => {
+      if (!globalObject.playerName) {
+        notification('Input Player Name first');
+        return;
+      }
+      this.intro.style.display = 'none';
+    });
   }
+
   handlePlayerInfo() {
     Selectors.nameSubmitSelector.addEventListener('click', (e) => {
       e.preventDefault();
@@ -111,23 +114,28 @@ class Game {
 }
 
 // @desc loads images from promises assigns images to global variable initializes Game
-preLoader().then(
-  ([
-    tilesSprite,
-    castleSprite,
-    cloudSprite,
-    mountainSprite,
-    assetsSprite,
-    marioImg,
-  ]) => {
-    tilesImage = tilesSprite;
-    castleImage = castleSprite;
-    cloudImage = cloudSprite;
-    mountainImage = mountainSprite;
-    assetImage = assetsSprite;
-    Selectors.preloaderSelector.style.display = 'none';
+preLoader()
+  .then(
+    ([
+      tilesSprite,
+      castleSprite,
+      cloudSprite,
+      mountainSprite,
+      assetsSprite,
+      marioImg,
+    ]) => {
+      tilesImage = tilesSprite;
+      castleImage = castleSprite;
+      cloudImage = cloudSprite;
+      mountainImage = mountainSprite;
+      assetImage = assetsSprite;
+      Selectors.preloaderSelector.style.display = 'none';
+      return marioImg;
+    }
+  )
+  .then((marioImg) => {
+    Selectors.nameFormSelector.style.display = 'flex';
     new HomeScreen(marioImg);
-  }
-);
+  });
 
 export { globalObject, tilesImage, assetImage };

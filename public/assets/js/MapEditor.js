@@ -1,5 +1,7 @@
 import { tilesImage } from './Main.js';
 import BlockObject from './BlockObjects.js';
+import globalObject from './GlobalObect.js';
+import { notification } from './Utils.js';
 import {
   PIPE_BOTTOM_LEFT_ID,
   PIPE_BOTTOM_RIGHT_ID,
@@ -33,36 +35,40 @@ class MapEditor {
     this.maxWidth = 2400;
     this.mapData = [];
     this.entities = [];
+    this.canBeSaved = false;
     this.selectedEntityId = 0;
-    let column;
-    Selectors.containerSelector.style.backgroundColor = '#ed8e8e';
     this.canvas = document.createElement('canvas');
     this.ctx = this.canvas.getContext('2d');
-    // globalObject.ctx = this.ctx;
     this.canvas.height = ROWS_OF_TILES * MAP_TILE_SIZE;
     this.canvas.width = EDITOR_CANVAS_WIDTH;
     this.canvas.classList.add('editor-canvas');
     Selectors.mapEditor.appendChild(this.canvas);
-    column = Math.floor(this.maxWidth / MAP_TILE_SIZE);
-    this.rightOffset = column * MAP_TILE_SIZE - this.canvas.width;
+
+    this.column = Math.floor(this.maxWidth / MAP_TILE_SIZE);
+    this.rightOffset = this.column * MAP_TILE_SIZE - this.canvas.width;
     Selectors.widthSelector.addEventListener('click', (e) => {
       e.preventDefault();
       this.maxWidth = Selectors.widthInput.value;
-      column = Math.floor(Math.floor(this.maxWidth / MAP_TILE_SIZE) / 10) * 10;
-      this.rightOffset = column * MAP_TILE_SIZE - this.canvas.width;
-      this.initMap(column);
+      this.column =
+        Math.floor(Math.floor(this.maxWidth / MAP_TILE_SIZE) / 10) * 10;
+      this.rightOffset = this.column * MAP_TILE_SIZE - this.canvas.width;
+      this.initMap(this.column);
     });
+
     const tileSelector = document.createElement('div');
     tileSelector.classList.add('tiles-wrapper');
     Selectors.mapEditor.appendChild(tileSelector);
+
     this.leftNavButton = this.addNavButtons(LEFT);
     this.rightNavButton = this.addNavButtons(RIGHT);
     Selectors.mapEditor.appendChild(this.leftNavButton);
     Selectors.mapEditor.appendChild(this.rightNavButton);
     this.addSelectors(tileSelector);
+
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.initMap(column);
+    this.initMap(this.column);
     this.handleSelect();
+    this.handleEvents();
   }
   addSelectors(tileSelector) {
     [0, 1, 2, 3, 4, 5, 411, 412, 421, 422, 11].forEach((data) => {
@@ -109,49 +115,81 @@ class MapEditor {
         Math.floor(offsetX / MAP_TILE_SIZE) +
         this.rightClickTracker * (this.rightScrollOffset / MAP_TILE_SIZE);
       this.mapData[rowIndex][columnIndex] = this.selectedEntityId;
-      if (this.selectedEntityId !== 0) {
-        let block = new BlockObject({
-          position: {
-            x:
-              MAP_TILE_SIZE *
-              (columnIndex -
-                this.rightClickTracker *
-                  (this.rightScrollOffset / MAP_TILE_SIZE)),
-            y: MAP_TILE_SIZE * rowIndex,
-          },
-          elementId: this.selectedEntityId,
-          size: MAP_TILE_SIZE,
-        });
-        block.initBlock(this.ctx);
-        this.entities.push(block);
+
+      let block = new BlockObject({
+        position: {
+          x:
+            MAP_TILE_SIZE *
+            (columnIndex -
+              this.rightClickTracker *
+                (this.rightScrollOffset / MAP_TILE_SIZE)),
+          y: MAP_TILE_SIZE * rowIndex,
+        },
+        elementId: this.selectedEntityId,
+        size: MAP_TILE_SIZE,
+      });
+      block.initBlock(this.ctx);
+      this.entities.push(block);
+      //Edit for flag Flag
+      if (this.selectedEntityId === 2) {
+        this.canBeSaved = true;
       }
     });
+  }
+  handleEvents() {
     // @desc Navbuttons handling
     this.rightNavButton.addEventListener('click', () => {
-      this.rightOffset -= RIGHT_SCROLL_OFFSET;
-      if (this.rightOffset < 0) {
-        this.rightNavButton.style.display = 'none';
+      console.log(this.mapData);
+      if (this.rightOffset <= 0) {
+        notification('Reached End of World');
         console.log('You shall not pass');
         return;
+      } else {
+        this.rightNavButton.style.display = 'block';
       }
+      this.rightOffset -= RIGHT_SCROLL_OFFSET;
+      this.rightClickTracker += 1;
+      console.log(this.rightClickTracker);
+      console.log(this.rightOffset);
+
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      // console.log(this.entities);
       this.entities.forEach((entity) => {
         entity.position.x -= RIGHT_SCROLL_OFFSET;
-        entity.drawBlock(this.ctx);
+        if (entity.elementId !== 0) {
+          entity.drawBlock(this.ctx);
+        }
+        if (entity.elementId === 0) {
+          entity.drawBlock(this.ctx, 0);
+        }
       });
-      this.rightClickTracker += 1;
     });
     this.leftNavButton.addEventListener('click', () => {
       if (this.rightClickTracker <= 0) {
-        console.log('You shall not pass');
+        notification('Reached Start of World');
         return;
+      } else {
+        this.leftNavButton.style.display = 'block';
       }
+      this.rightOffset += RIGHT_SCROLL_OFFSET;
+      this.rightClickTracker -= 1;
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
       this.entities.forEach((entity) => {
         entity.position.x += RIGHT_SCROLL_OFFSET;
-        entity.drawBlock(this.ctx);
+        if (entity.elementId !== 0) {
+          entity.drawBlock(this.ctx);
+        }
+        if (entity.elementId === 0) {
+          entity.drawBlock(this.ctx, 0);
+        }
       });
-      this.rightClickTracker -= 1;
+    });
+    Selectors.clearMap.addEventListener('click', () => {
+      this.clearMap(this);
+    });
+    Selectors.saveMap.addEventListener('click', () => {
+      this.saveMap();
     });
   }
   drawSelectors(ctx, data) {
@@ -243,6 +281,42 @@ class MapEditor {
           EDITOR_SELECTOR_TILE_WIDTH
         );
         break;
+    }
+  }
+  clearMap(object) {
+    console.log(object);
+    console.log('wassip');
+    console.log(this);
+    object.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    object.entities = [];
+    object.mapData = [];
+    object.initMap(object.column);
+    console.log(object.mapData);
+  }
+  async saveMap() {
+    if (this.canBeSaved) {
+      const rawData = {
+        player: globalObject.playerName,
+        mapData: this.mapData,
+      };
+      const jsonData = JSON.stringify(rawData);
+      console.log(jsonData);
+      const response = await fetch('http://127.0.0.1:5005/api/map', {
+        method: 'POST',
+        body: jsonData,
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      });
+      const data = await response.json();
+      console.log(data);
+      if (data.success) {
+        notification('Map Saved');
+      }
+
+      this.clearMap(this);
+    } else {
+      notification('Add a flag pole');
     }
   }
 }
