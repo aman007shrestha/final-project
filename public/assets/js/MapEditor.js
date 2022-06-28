@@ -1,7 +1,8 @@
 import { tilesImage } from './Main.js';
 import BlockObject from './BlockObjects.js';
-import globalObject from './GlobalObect.js';
-import { notification } from './Utils.js';
+import { globalObject } from './Main.js';
+import { notification, backMenu } from './Utils.js';
+import { HomeScreen, marioImg } from './Main.js';
 import {
   PIPE_BOTTOM_LEFT_ID,
   PIPE_BOTTOM_RIGHT_ID,
@@ -37,11 +38,14 @@ class MapEditor {
     this.entities = [];
     this.canBeSaved = false;
     this.selectedEntityId = 0;
+    globalObject.currentPage = 'mapEditor';
     this.canvas = document.createElement('canvas');
     this.ctx = this.canvas.getContext('2d');
     this.canvas.height = ROWS_OF_TILES * MAP_TILE_SIZE;
     this.canvas.width = EDITOR_CANVAS_WIDTH;
     this.canvas.classList.add('editor-canvas');
+    Selectors.editorCanvas = this.canvas;
+    console.log('canvas added');
     Selectors.mapEditor.appendChild(this.canvas);
 
     this.column = Math.floor(this.maxWidth / MAP_TILE_SIZE);
@@ -57,7 +61,11 @@ class MapEditor {
 
     const tileSelector = document.createElement('div');
     tileSelector.classList.add('tiles-wrapper');
+    console.log(tileSelector);
     Selectors.mapEditor.appendChild(tileSelector);
+    Selectors.tileSelector = tileSelector;
+    console.log('tiles added');
+    console.log(Selectors);
 
     this.leftNavButton = this.addNavButtons(LEFT);
     this.rightNavButton = this.addNavButtons(RIGHT);
@@ -191,6 +199,7 @@ class MapEditor {
     Selectors.saveMap.addEventListener('click', () => {
       this.saveMap();
     });
+    Selectors.mainMenu.addEventListener('click', backMenu);
   }
   drawSelectors(ctx, data) {
     let spriteCoordinates;
@@ -284,14 +293,10 @@ class MapEditor {
     }
   }
   clearMap(object) {
-    console.log(object);
-    console.log('wassip');
-    console.log(this);
     object.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     object.entities = [];
     object.mapData = [];
     object.initMap(object.column);
-    console.log(object.mapData);
   }
   async saveMap() {
     if (this.canBeSaved) {
@@ -309,7 +314,6 @@ class MapEditor {
         },
       });
       const data = await response.json();
-      console.log(data);
       if (data.success) {
         notification('Map Saved');
       }
@@ -320,4 +324,5 @@ class MapEditor {
     }
   }
 }
+
 export default MapEditor;

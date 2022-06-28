@@ -1,7 +1,8 @@
 // @param accepts 2d array of entities id
 import BlockObject from './BlockObjects.js';
 import { Goomba } from './Enemy.js';
-import { assetImage, globalObject } from './Main.js';
+import { assetImage, globalObject, HomeScreen, marioImg } from './Main.js';
+import { backMenu } from './Utils.js';
 import Mario from './Mario.js';
 import eventsInput from './Events.js';
 import {
@@ -12,12 +13,23 @@ import {
   DEFAULT_LIVES,
   GOOMBA_ID,
 } from './Constants.js';
+import Selectors from './DomSelector.js';
 
 class LevelConsumer {
   constructor(levelMap) {
     this.lives = DEFAULT_LIVES;
     this.levelMap = levelMap;
+    this.canvas = document.createElement('canvas');
+    this.canvas.height = CANVAS_HEIGHT;
+    this.canvas.width = CANVAS_WIDTH;
+    Selectors.gameCanvas = this.canvas;
+    Selectors.gameSelector.appendChild(this.canvas);
+    globalObject.canvas = this.canvas;
+    globalObject.ctx = globalObject.canvas.getContext('2d');
+    globalObject.ctx.imageSmoothingEnabled = false;
+    globalObject.currentPage = 'game';
     this.initObjects();
+    this.handleEvent();
   }
   initObjects() {
     this.entities = [];
@@ -56,8 +68,6 @@ class LevelConsumer {
 
   update() {
     globalObject.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    // globalObject.ctx.fillStyle = '#64acfc';
-    // globalObject.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     eventsInput.update(this.mario);
     let viewPortFraction;
     if (this.mario.position.x >= globalObject.canvas.width / 2) {
@@ -117,5 +127,9 @@ class LevelConsumer {
     this.entities = [];
     this.enemies = [];
   }
+  handleEvent() {
+    Selectors.mainMenu.addEventListener('click', backMenu);
+  }
 }
+
 export default LevelConsumer;

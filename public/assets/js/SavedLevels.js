@@ -1,9 +1,14 @@
 import Selectors from './DomSelector.js';
 import { Game } from './Main.js';
+import { globalObject } from './Main.js';
+import { notification, backMenu } from './Utils.js';
+import { HomeScreen, marioImg } from './Main.js';
 
 class SavedLevel {
   constructor() {
     this.fetchData();
+    this.handleEvents();
+    globalObject.currentPage = 'savedLevel';
   }
 
   async fetchData() {
@@ -18,6 +23,11 @@ class SavedLevel {
   }
 
   displayLevels(responseData) {
+    const levelsWrapper = document.createElement('div');
+    levelsWrapper.classList.add('level-wrapper');
+    Selectors.savedLevel.appendChild(levelsWrapper);
+    Selectors.levelsWrapper = levelsWrapper;
+
     responseData.map((data) => {
       const element = document.createElement('div');
       element.classList.add('saved-level');
@@ -47,7 +57,7 @@ class SavedLevel {
         this.renderLevel(data._id);
       });
 
-      Selectors.savedLevel.appendChild(element);
+      Selectors.levelsWrapper.appendChild(element);
     });
   }
   async renderLevel(data_id) {
@@ -64,7 +74,17 @@ class SavedLevel {
     new Game(map);
   }
 
-  deleteSavedLevel(data) {}
+  deleteSavedLevel(data) {
+    if (data.player !== globalObject.playerName) {
+      notification('You are not author');
+      return;
+    }
+    console.log(data);
+    console.log(globalObject);
+  }
+  handleEvents() {
+    Selectors.mainMenu.addEventListener('click', backMenu);
+  }
 }
 
 export default SavedLevel;

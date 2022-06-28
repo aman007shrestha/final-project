@@ -2,10 +2,11 @@ import { preLoader } from './Preload.js';
 import { map } from './Constants.js';
 import LevelConsumer from './LevelConsumer.js';
 import Selectors from './DomSelector.js';
-import globalObject from './GlobalObect.js';
+// import globalObject from './GlobalObect.js';
 import MapEditor from './MapEditor.js';
 import SavedLevel from './SavedLevels.js';
 import { notification } from './Utils.js';
+import GlobalObject from './GlobalObect.js';
 let tilesImage;
 let castleImage;
 let assetImage;
@@ -13,13 +14,22 @@ let cloudImage;
 let mountainImage;
 let level;
 let playerName;
+let globalObject;
+let marioImg;
 
 class HomeScreen {
   constructor(marioImg) {
     this.handlePlayerInfo();
-    globalObject.canvas.style.display = 'none';
+    // globalObject.canvas.style.display = 'none';
+    Selectors.mapEditor.style.display = 'none';
+
     this.intro = document.createElement('div');
     this.intro.classList.add('intro');
+    Selectors.introSelector = this.intro;
+    this.intro.style.display = 'flex';
+    if (globalObject.playerName) {
+      this.intro.style.filter = 'blur(0px)';
+    }
     const introImg = document.createElement('img');
     introImg.src = marioImg.src;
     introImg.classList.add('intro--img');
@@ -39,6 +49,7 @@ class HomeScreen {
     this.intro.appendChild(buttonsWrapper);
     Selectors.containerSelector.appendChild(this.intro);
     this.defineEvents();
+    console.log('Home screen');
   }
 
   defineEvents() {
@@ -47,9 +58,10 @@ class HomeScreen {
         notification('Input Player Name first');
         return;
       }
+      console.log('Play clicked');
       this.intro.style.display = 'none';
-      globalObject.canvas.style.display = 'block';
-      new Game(map);
+      // globalObject.canvas.style.display = 'block';
+      globalObject.game = new Game(map);
     });
 
     this.createMap.addEventListener('click', () => {
@@ -59,7 +71,7 @@ class HomeScreen {
       }
       this.intro.style.display = 'none';
       Selectors.mapEditor.style.display = 'flex';
-      new MapEditor();
+      globalObject.editor = new MapEditor();
     });
 
     this.savedLevels.addEventListener('click', () => {
@@ -69,7 +81,7 @@ class HomeScreen {
       }
       this.intro.style.display = 'none';
       Selectors.savedLevel.style.display = 'flex';
-      new SavedLevel();
+      globalObject.savedLevel = new SavedLevel();
     });
   }
 
@@ -96,17 +108,18 @@ class HomeScreen {
 
 class Game {
   constructor(map) {
-    globalObject.canvas.style.display = 'block';
+    // globalObject.canvas.style.display = 'block';
     level = new LevelConsumer(map);
 
     globalObject.level = level;
     this.update();
+    console.log('Globbball', globalObject);
   }
   update() {
     function play() {
       globalObject.frame += 1;
       level.update();
-      requestAnimationFrame(play);
+      globalObject.animationFrame = requestAnimationFrame(play);
     }
     play();
   }
@@ -124,7 +137,7 @@ preLoader()
       cloudSprite,
       mountainSprite,
       assetsSprite,
-      marioImg,
+      mario,
     ]) => {
       tilesImage = tilesSprite;
       castleImage = castleSprite;
@@ -132,12 +145,14 @@ preLoader()
       mountainImage = mountainSprite;
       assetImage = assetsSprite;
       Selectors.preloaderSelector.style.display = 'none';
+      marioImg = mario;
+      Selectors.nameFormSelector.style.display = 'flex';
       return marioImg;
     }
   )
   .then((marioImg) => {
-    Selectors.nameFormSelector.style.display = 'flex';
-    new HomeScreen(marioImg);
+    globalObject = new GlobalObject();
+    globalObject.homescreen = new HomeScreen(marioImg);
   });
 
-export { globalObject, tilesImage, assetImage, Game };
+export { globalObject, tilesImage, assetImage, HomeScreen, Game, marioImg };

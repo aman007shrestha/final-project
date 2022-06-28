@@ -1,4 +1,5 @@
 const Selectors = {
+  gameSelector: document.getElementById('main-game'),
   preloaderSelector: document.querySelector('.preloader'),
   nameFormSelector: document.querySelector('.name__form'),
   playerNameSelector: document.getElementById('player-name'),
@@ -12,5 +13,6 @@ const Selectors = {
   clearMap: document.querySelector('.clear__map'),
   saveMap: document.querySelector('.save__map'),
   savedLevel: document.querySelector('.saved__levels'),
+  mainMenu: document.querySelector('.main-menu'),
 };
 export default Selectors;
