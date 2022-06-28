@@ -3,6 +3,7 @@ import { Game } from './Main.js';
 import { globalObject } from './Main.js';
 import { notification, backMenu } from './Utils.js';
 import { HomeScreen, marioImg } from './Main.js';
+import { CLICK_EVENT, NONE } from './Constants.js';
 
 class SavedLevel {
   constructor() {
@@ -70,7 +71,7 @@ class SavedLevel {
     const responseData = await response.json();
     console.log(responseData.data.map);
     const map = responseData.data.map;
-    Selectors.savedLevel.style.display = 'none';
+    Selectors.savedLevel.style.display = NONE;
     new Game(map);
   }
 
@@ -83,7 +84,7 @@ class SavedLevel {
     console.log(globalObject);
   }
   handleEvents() {
-    Selectors.mainMenu.addEventListener('click', backMenu);
+    Selectors.mainMenu.addEventListener(CLICK_EVENT, backMenu);
   }
 }
 export default SavedLevel;

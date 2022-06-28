@@ -1,5 +1,18 @@
 import { Vector } from './Maths.js';
-import { globalObject, marioImg } from './Main.js';
+import { globalObject, marioImg, tilesImage } from './Main.js';
+
+import {
+  BOUNCE_BACK,
+  BRICK,
+  DEAD_JUMP,
+  FLAG,
+  GOOMBA,
+  GROUND,
+  PIPE,
+  STONE,
+  TILE_HEIGHT,
+  TREASURE,
+} from './Constants.js';
 
 // @desc takes image off the spriteSheet along with name of object and the location of where to draw the image
 class GenericMovableObject {
@@ -25,7 +38,6 @@ class GenericMovableObject {
     );
   }
   //@desc Rectangle collision with mario & (block || coin || Powerup || Enemy)
-
   checkRectangularCollision(entity) {
     return (
       this.position.x < entity.position.x + entity.width &&
@@ -39,27 +51,25 @@ class GenericMovableObject {
       return;
     }
     if (this.checkRectangularCollision(entity)) {
-      if (entity.type === 'goomba') {
+      if (entity.type === GOOMBA) {
         if (
           this.position.x >= entity.position.x &&
           this.position.y + this.height > entity.position.y + entity.height / 2
         ) {
-          console.log('left collisions');
-          console.log(entity.position.y);
-          console.log(this.position.y);
           this.position.x = entity.position.x + entity.width;
-          this.velocity.y = -5;
+          this.velocity.y = DEAD_JUMP;
           entity.velocity.x = 0;
+          this.isJumping = true;
           return true;
         } else if (
           this.position.x <= entity.position.x &&
           this.position.y + this.height > entity.position.y + entity.height / 2
         ) {
-          console.log('Right collisions');
           this.position.x = entity.position.x - this.width;
           this.velocity.x = 0;
-          this.velocity.y = -5;
+          this.velocity.y = DEAD_JUMP;
           entity.velocity.x = 0;
+          this.isJumping = true;
           return true;
         }
       }
@@ -76,31 +86,52 @@ class GenericMovableObject {
       ) {
         console.log('vertical');
         entity.isAlive = false;
-        this.velocity.y = -3;
-
+        this.velocity.y = BOUNCE_BACK;
         return true;
       }
     }
   }
   checkBlockCollision(entity) {
     if (this.checkRectangularCollision(entity)) {
+      if (entity.type === FLAG) {
+        if (
+          this.position.x + this.width >=
+          entity.position.x + entity.width / 2
+        )
+          // Win Animation
+          alert('win case');
+        return;
+      }
       if (
-        entity.type === 'pipe' ||
-        entity.type === 'stone' ||
-        entity.type === 'brick' ||
-        entity.type === 'treasure' ||
-        entity.type === 'ground'
+        entity.type === PIPE ||
+        entity.type === STONE ||
+        entity.type === BRICK ||
+        entity.type === TREASURE ||
+        entity.type === GROUND
       ) {
         if (
           this.position.y > entity.position.y &&
           this.velocity.y < 0 &&
-          this.position.x + this.width > entity.position.x
+          this.position.x + this.width > entity.position.x &&
+          entity.position.x + entity.position.y > entity.position.x
         ) {
           this.position.y = entity.position.y + entity.height;
           this.velocity.y *= -1;
-          if (entity.type === 'treasure') {
+          if (entity.type === TREASURE) {
             entity.isOpen = true;
             entity.spriteCoordinates[0] = 16 * 27;
+            console.log(entity.position.x);
+            globalObject.level.powerUps.forEach((powerUp) => {
+              console.log(powerUp);
+              if (
+                powerUp.position.x < entity.position.x + entity.width &&
+                powerUp.position.x + powerUp.width > entity.position.x
+              ) {
+                console.log('po');
+                console.log(powerUp);
+                powerUp.active = true;
+              }
+            });
           }
           return;
         }
@@ -124,7 +155,8 @@ class GenericMovableObject {
         if (
           this.position.y < entity.position.y &&
           this.velocity.y >= 0 &&
-          this.position.x + this.width > entity.position.x
+          this.position.x + this.width > entity.position.x &&
+          entity.position.x + entity.position.y > this.position.x
         ) {
           this.position.y = entity.position.y - this.height - 1;
           this.velocity.y = 1;

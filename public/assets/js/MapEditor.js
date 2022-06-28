@@ -1,4 +1,4 @@
-import { tilesImage } from './Main.js';
+import { tilesImage, assetImage } from './Main.js';
 import BlockObject from './BlockObjects.js';
 import { globalObject } from './Main.js';
 import { notification, backMenu } from './Utils.js';
@@ -16,6 +16,8 @@ import {
   SPRITE_HEIGHT,
   SPRITE_WIDTH,
   GOOMBA_ID,
+  FLAGPOLE_ID,
+  FLAG_ID,
   EDITOR_SELECTOR_TILE_WIDTH,
   MAP_TILE_SIZE,
   EDITOR_CANVAS_HEIGHT,
@@ -24,6 +26,17 @@ import {
   ROWS_OF_TILES,
   LEFT,
   RIGHT,
+  FLAG_SPRITE,
+  TREASURE_SPRITE,
+  GOOMBA_SPRITE,
+  FLAGPOLE_SPRITE,
+  PIPE_BOTTOM_RIGHT_SPRITE,
+  PIPE_BOTTOM_LEFT_SPRITE,
+  PIPE_TOP_RIGHT_SPRITE,
+  PIPE_TOP_LEFT_SPRITE,
+  STONE_SPRITE,
+  BRICK_SPRITE,
+  GROUND_SPRITE,
 } from './Constants.js';
 
 import Selectors from './DomSelector.js';
@@ -78,7 +91,7 @@ class MapEditor {
     this.handleEvents();
   }
   addSelectors(tileSelector) {
-    [0, 1, 2, 3, 4, 5, 411, 412, 421, 422, 11].forEach((data) => {
+    [0, 1, 2, 3, 5, 7, 8, 411, 412, 421, 422, 11].forEach((data) => {
       let elementCanvas = document.createElement('canvas');
       let ctx = elementCanvas.getContext('2d');
       elementCanvas.width = EDITOR_SELECTOR_TILE_WIDTH;
@@ -137,8 +150,7 @@ class MapEditor {
       });
       block.initBlock(this.ctx);
       this.entities.push(block);
-      //Edit for flag Flag
-      if (this.selectedEntityId === 2) {
+      if (this.selectedEntityId === FLAGPOLE_ID) {
         this.canBeSaved = true;
       }
     });
@@ -149,7 +161,6 @@ class MapEditor {
       console.log(this.mapData);
       if (this.rightOffset <= 0) {
         notification('Reached End of World');
-        console.log('You shall not pass');
         return;
       } else {
         this.rightNavButton.style.display = 'block';
@@ -160,7 +171,6 @@ class MapEditor {
       console.log(this.rightOffset);
 
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      // console.log(this.entities);
       this.entities.forEach((entity) => {
         entity.position.x -= RIGHT_SCROLL_OFFSET;
         if (entity.elementId !== 0) {
@@ -213,7 +223,7 @@ class MapEditor {
         );
         break;
       case GROUND_ID:
-        spriteCoordinates = [0, 0, SPRITE_WIDTH, SPRITE_HEIGHT];
+        spriteCoordinates = GROUND_SPRITE;
         ctx.drawImage(
           tilesImage,
           ...spriteCoordinates,
@@ -224,7 +234,7 @@ class MapEditor {
         );
         break;
       case BRICK_ID:
-        spriteCoordinates = [16 * 22, 0, SPRITE_WIDTH, SPRITE_HEIGHT];
+        spriteCoordinates = BRICK_SPRITE;
         ctx.drawImage(
           tilesImage,
           ...spriteCoordinates,
@@ -235,7 +245,7 @@ class MapEditor {
         );
         break;
       case STONE_ID:
-        spriteCoordinates = [0, 16, SPRITE_WIDTH, SPRITE_HEIGHT];
+        spriteCoordinates = STONE_SPRITE;
         ctx.drawImage(
           tilesImage,
           ...spriteCoordinates,
@@ -246,7 +256,7 @@ class MapEditor {
         );
         break;
       case PIPE_TOP_LEFT_ID:
-        spriteCoordinates = [0, 16 * 10, SPRITE_WIDTH, SPRITE_HEIGHT];
+        spriteCoordinates = PIPE_TOP_LEFT_SPRITE;
         ctx.drawImage(
           tilesImage,
           ...spriteCoordinates,
@@ -257,7 +267,7 @@ class MapEditor {
         );
         break;
       case PIPE_TOP_RIGHT_ID:
-        spriteCoordinates = [16, 16 * 10, SPRITE_WIDTH, SPRITE_HEIGHT];
+        spriteCoordinates = PIPE_TOP_RIGHT_SPRITE;
         ctx.drawImage(
           tilesImage,
           ...spriteCoordinates,
@@ -268,7 +278,7 @@ class MapEditor {
         );
         break;
       case PIPE_BOTTOM_LEFT_ID:
-        spriteCoordinates = [0, 16 * 11, SPRITE_WIDTH, SPRITE_HEIGHT];
+        spriteCoordinates = PIPE_BOTTOM_LEFT_SPRITE;
         ctx.drawImage(
           tilesImage,
           ...spriteCoordinates,
@@ -279,9 +289,54 @@ class MapEditor {
         );
         break;
       case PIPE_BOTTOM_RIGHT_ID:
-        spriteCoordinates = [16, 16 * 11, SPRITE_WIDTH - 1, SPRITE_HEIGHT];
+        spriteCoordinates = PIPE_BOTTOM_RIGHT_SPRITE;
         ctx.drawImage(
           tilesImage,
+          ...spriteCoordinates,
+          0,
+          0,
+          EDITOR_SELECTOR_TILE_WIDTH,
+          EDITOR_SELECTOR_TILE_WIDTH
+        );
+        break;
+      case TREASURE_ID:
+        spriteCoordinates = TREASURE_SPRITE;
+        ctx.drawImage(
+          tilesImage,
+          ...spriteCoordinates,
+          0,
+          0,
+          EDITOR_SELECTOR_TILE_WIDTH,
+          EDITOR_SELECTOR_TILE_WIDTH
+        );
+        break;
+      case FLAG_ID:
+        spriteCoordinates = FLAG_SPRITE;
+        ctx.drawImage(
+          tilesImage,
+          ...spriteCoordinates,
+          0,
+          0,
+          EDITOR_SELECTOR_TILE_WIDTH,
+          EDITOR_SELECTOR_TILE_WIDTH
+        );
+        break;
+      case FLAGPOLE_ID:
+        spriteCoordinates = FLAGPOLE_SPRITE;
+        ctx.drawImage(
+          tilesImage,
+          ...spriteCoordinates,
+          0,
+          0,
+          EDITOR_SELECTOR_TILE_WIDTH,
+          EDITOR_SELECTOR_TILE_WIDTH
+        );
+        break;
+      case GOOMBA_ID:
+        console.log(this.selectedEntityId);
+        spriteCoordinates = GOOMBA_SPRITE;
+        ctx.drawImage(
+          assetImage,
           ...spriteCoordinates,
           0,
           0,

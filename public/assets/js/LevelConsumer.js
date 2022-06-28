@@ -12,6 +12,9 @@ import {
   TILE_WIDTH,
   DEFAULT_LIVES,
   GOOMBA_ID,
+  GAME_PAGE,
+  CLICK_EVENT,
+  POWER_UP_ID,
 } from './Constants.js';
 import Selectors from './DomSelector.js';
 
@@ -27,15 +30,16 @@ class LevelConsumer {
     globalObject.canvas = this.canvas;
     globalObject.ctx = globalObject.canvas.getContext('2d');
     globalObject.ctx.imageSmoothingEnabled = false;
-    globalObject.currentPage = 'game';
+    globalObject.currentPage = GAME_PAGE;
     this.initObjects();
     this.handleEvent();
   }
   initObjects() {
     this.entities = [];
     this.enemies = [];
+    this.powerUps = [];
     this.mario = new Mario(assetImage, 175, 0, TILE_WIDTH, TILE_HEIGHT);
-    eventsInput.init();
+    eventsInput.init(this.mario);
     this.mario.draw(globalObject.ctx);
     this.levelMap.forEach((row, i) => {
       row.forEach((elementId, j) => {
@@ -58,11 +62,25 @@ class LevelConsumer {
               })
             );
           }
+        } else if (elementId === POWER_UP_ID) {
+          this.powerUps.push(
+            new BlockObject({
+              position: {
+                x: TILE_WIDTH * j,
+                y: TILE_HEIGHT * i,
+              },
+              elementId,
+            })
+          );
         }
       });
     });
     this.entities.forEach((entity) => {
       entity.initBlock(globalObject.ctx);
+    });
+    console.log(this.powerUps);
+    this.powerUps.forEach((powerUp) => {
+      powerUp.initBlock(globalObject.ctx);
     });
   }
 
@@ -79,13 +97,16 @@ class LevelConsumer {
     } else {
       viewPortFraction = 0;
     }
+    this.powerUps.forEach((powerUp) => {
+      powerUp.position.x -= viewPortFraction;
+    });
     this.entities.forEach((blockObject) => {
       if (blockObject.position.x > -TILE_WIDTH) {
         blockObject.position.x = blockObject.position.x - viewPortFraction;
       }
       //draw entity only for visible range
       if (
-        blockObject.position.x > -60 &&
+        blockObject.position.x > -TILE_WIDTH &&
         blockObject.position.x < globalObject.canvas.width
       ) {
         blockObject.drawBlock(globalObject.ctx);
@@ -110,6 +131,7 @@ class LevelConsumer {
           enemy.move(this.entities);
         }
       }
+      // Enemy Mario collision check
       if (enemy.position.x < globalObject.canvas.width / 2 + TILE_WIDTH) {
         if (this.mario.hasStar && this.mario.checkRectangularCollision(enemy)) {
           console.log('enemyDied');
@@ -141,8 +163,7 @@ class LevelConsumer {
               this.mario.isSpawning = false;
             }, 2000);
           } else {
-            console.log('Mario died');
-
+            this.mario.isDead = true;
             // Dead Animation
             this.lives -= 1;
             setTimeout(() => {
@@ -153,6 +174,20 @@ class LevelConsumer {
         return;
       }
     });
+    // if (this.powerUps.length > 0) {
+    //   console.log(this.powerUps[0].checkBlockCollision(blockObject));
+    // }
+    // this.powerUps.forEach((powerUp) => {
+    //   powerUp.draw();
+    //   powerUp.checkVerticalCollision();
+    // });
+    if (this.powerUps.length > 0) {
+      this.powerUps.forEach((powerUp) => {
+        if (powerUp.active) {
+          powerUp.drawBlock(globalObject.ctx, powerUp.elementId);
+        }
+      });
+    }
     this.mario.update(globalObject.ctx);
   }
   reset() {
@@ -160,7 +195,7 @@ class LevelConsumer {
     this.enemies = [];
   }
   handleEvent() {
-    Selectors.mainMenu.addEventListener('click', backMenu);
+    Selectors.mainMenu.addEventListener(CLICK_EVENT, backMenu);
   }
 }
 

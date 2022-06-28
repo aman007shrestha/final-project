@@ -2,16 +2,17 @@ let eventsInput = {
   // @ mario should be able to jump only once upon persistent key press jump
   jumpable: true,
   pressed: {},
-  init() {
+  init(mario) {
     addEventListener('keydown', (e) => {
       this.pressed[e.code] = true;
-      if (e.code === 'ArrowUp') {
-      }
+      mario.isMoving = true;
     });
     addEventListener('keyup', (e) => {
       if (e.code === 'ArrowUp') {
         this.jumpable = true;
       }
+      mario.isMoving = false;
+      console.log(mario);
       delete this.pressed[e.code];
     });
   },

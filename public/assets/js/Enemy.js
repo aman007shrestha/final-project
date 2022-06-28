@@ -1,6 +1,6 @@
 import GenericMovableObject from './GenericMovableObject.js';
 import Sprite from './Sprite.js';
-import { TILE_WIDTH, TILE_HEIGHT } from './Constants.js';
+import { TILE_WIDTH, TILE_HEIGHT, GOOMBA } from './Constants.js';
 import { assetImage, globalObject } from './Main.js';
 
 class Enemy extends GenericMovableObject {
@@ -12,11 +12,11 @@ class Enemy extends GenericMovableObject {
 class Goomba extends Enemy {
   constructor({ x, y }) {
     let goombaImg = new Sprite(assetImage, 115, 5, 16, 16);
-    super(goombaImg, 'goomba', x, y, TILE_WIDTH, TILE_HEIGHT);
+    super(goombaImg, GOOMBA, x, y, TILE_WIDTH, TILE_HEIGHT);
     this.velocity.set(1.5, 0);
     this.isGrounded = false;
     this.isAlive = true;
-    this.type = 'goomba';
+    this.type = GOOMBA;
     console.log(this);
     this.spriteSource = [115, 131];
   }
