@@ -1,5 +1,5 @@
 import { Vector } from './Maths.js';
-import { globalObject } from './Main.js';
+import { globalObject, marioImg } from './Main.js';
 
 // @desc takes image off the spriteSheet along with name of object and the location of where to draw the image
 class GenericMovableObject {
@@ -35,24 +35,49 @@ class GenericMovableObject {
     );
   }
   checkHorizontalCollision(entity) {
+    if (!entity.isAlive) {
+      return;
+    }
     if (this.checkRectangularCollision(entity)) {
       if (entity.type === 'goomba') {
         if (
-          entity.position.x <= this.position.x + this.width ||
-          this.position.x <= entity.position.x + entity.width
+          this.position.x >= entity.position.x &&
+          this.position.y + this.height > entity.position.y + entity.height / 2
         ) {
+          console.log('left collisions');
+          console.log(entity.position.y);
+          console.log(this.position.y);
+          this.position.x = entity.position.x + entity.width;
+          this.velocity.y = -5;
+          entity.velocity.x = 0;
+          return true;
+        } else if (
+          this.position.x <= entity.position.x &&
+          this.position.y + this.height > entity.position.y + entity.height / 2
+        ) {
+          console.log('Right collisions');
+          this.position.x = entity.position.x - this.width;
+          this.velocity.x = 0;
+          this.velocity.y = -5;
+          entity.velocity.x = 0;
           return true;
         }
       }
     }
   }
   checkVerticalCollision(entity) {
+    if (!entity.isAlive) {
+      return;
+    }
     if (this.checkRectangularCollision(entity)) {
       if (
-        this.position.y + this.height <= entity.position.y &&
-        this.velocity.y >= 0
+        this.position.y + this.height <
+        entity.position.y + entity.height / 2
       ) {
+        console.log('vertical');
+        entity.isAlive = false;
         this.velocity.y = -3;
+
         return true;
       }
     }

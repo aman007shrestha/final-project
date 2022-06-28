@@ -15,16 +15,22 @@ class Goomba extends Enemy {
     super(goombaImg, 'goomba', x, y, TILE_WIDTH, TILE_HEIGHT);
     this.velocity.set(1.5, 0);
     this.isGrounded = false;
+    this.isAlive = true;
     this.type = 'goomba';
     console.log(this);
     this.spriteSource = [115, 131];
   }
   move(blocks) {
+    if (!this.isAlive) {
+      this.sprite.sx = 147;
+      return;
+    }
     this.position.x += this.velocity.x;
     if (globalObject.frame % 15 === 0) {
       let currentSx = (globalObject.frame / 5) % this.spriteSource.length;
       this.sprite.sx = this.spriteSource[currentSx];
     }
+
     blocks.forEach((block) => {
       if (
         block.position.x - this.position < TILE_WIDTH ||

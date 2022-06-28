@@ -16,6 +16,7 @@ class Mario extends GenericMovableObject {
     ];
     this.isJumping = false;
     this.isBig = false;
+    this.hasStar = false;
     this.isGrounded = false;
     // Load sprites for animation
     this.movingDirection = 'rightWalk';
@@ -37,17 +38,10 @@ class Mario extends GenericMovableObject {
     if (!this.isGrounded) {
       useGravity(this);
     }
-    this.tiles = [
-      Math.floor(this.position.x / 60),
-      Math.floor(this.position.y / 60),
-    ];
     if (this.position.y > globalObject.canvas.height) {
       console.log(this.position.y);
       console.log(globalObject.canvas.height);
       globalObject.level.lives -= 1;
-      if (globalObject.level.lives <= 0) {
-        alert('Game Over');
-      }
       globalObject.level.initObjects();
     }
     this.draw(globalObject.ctx);

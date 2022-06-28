@@ -2,7 +2,6 @@ import { tilesImage } from './Main.js';
 import BlockObject from './BlockObjects.js';
 import { globalObject } from './Main.js';
 import { notification, backMenu } from './Utils.js';
-import { HomeScreen, marioImg } from './Main.js';
 import {
   PIPE_BOTTOM_LEFT_ID,
   PIPE_BOTTOM_RIGHT_ID,

@@ -86,5 +86,4 @@ class SavedLevel {
     Selectors.mainMenu.addEventListener('click', backMenu);
   }
 }
-
 export default SavedLevel;

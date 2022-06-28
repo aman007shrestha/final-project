@@ -39,5 +39,18 @@ let eventsInput = {
   isPressed(key) {
     return this.pressed[key];
   },
+  remove() {
+    removeEventListener('keydown', (e) => {
+      this.pressed[e.code] = true;
+      if (e.code === 'ArrowUp') {
+      }
+    });
+    removeEventListener('keyup', (e) => {
+      if (e.code === 'ArrowUp') {
+        this.jumpable = true;
+      }
+      delete this.pressed[e.code];
+    });
+  },
 };
 export default eventsInput;

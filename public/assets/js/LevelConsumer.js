@@ -67,6 +67,9 @@ class LevelConsumer {
   }
 
   update() {
+    if (this.lives <= 0) {
+      alert('game over');
+    }
     globalObject.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     eventsInput.update(this.mario);
     let viewPortFraction;
@@ -108,15 +111,44 @@ class LevelConsumer {
         }
       }
       if (enemy.position.x < globalObject.canvas.width / 2 + TILE_WIDTH) {
+        if (this.mario.hasStar && this.mario.checkRectangularCollision(enemy)) {
+          console.log('enemyDied');
+          enemy.isALive = false;
+          setTimeout(() => {
+            if (this.enemies.indexOf(enemy) > -1) {
+              this.enemies.splice(this.enemies.indexOf(enemy), 1);
+            }
+          }, 2000);
+          return;
+        }
         if (this.mario.checkVerticalCollision(enemy)) {
           console.log('enemyDead');
-          if (this.enemies.indexOf(enemy) > -1) {
-            this.enemies.splice(this.enemies.indexOf(enemy), 1);
-          }
+          enemy.isALive = false;
+          enemy.velocity.x = 0;
+          console.log(enemy);
+          setTimeout(() => {
+            if (this.enemies.indexOf(enemy) > -1) {
+              this.enemies.splice(this.enemies.indexOf(enemy), 1);
+            }
+          }, 2000);
           return;
         }
         if (this.mario.checkHorizontalCollision(enemy)) {
-          console.log('Mario died');
+          if (this.mario.isBig) {
+            this.mario.isBig = false;
+            this.mario.isSpawning = true;
+            setTimeout(() => {
+              this.mario.isSpawning = false;
+            }, 2000);
+          } else {
+            console.log('Mario died');
+
+            // Dead Animation
+            this.lives -= 1;
+            setTimeout(() => {
+              this.initObjects();
+            }, 2000);
+          }
         }
         return;
       }
