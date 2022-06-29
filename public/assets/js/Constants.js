@@ -115,9 +115,12 @@ export const marioSprite = {
     dead: [748, 5, 16, 16],
   },
 };
+import { cloudImage } from './Main.js';
+export const cloudsOrientation = [[0, 0, 64, 24, 200, 350, 64, 24]];
 export default {
   CANVAS_HEIGHT: 800,
 };
+
 export const map = [
   [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

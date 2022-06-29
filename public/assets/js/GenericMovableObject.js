@@ -1,6 +1,5 @@
 import { Vector } from './Maths.js';
 import { globalObject } from './Main.js';
-
 import {
   BOUNCE_BACK,
   BRICK,
@@ -23,6 +22,7 @@ class GenericMovableObject {
     this.width = width;
     this.height = height;
   }
+
   draw() {
     globalObject.drawImagesOnCanvasFromSprite(
       this.sprite.image,
@@ -36,6 +36,7 @@ class GenericMovableObject {
       this.height
     );
   }
+
   //@desc Rectangle collision with mario & (block || coin || Powerup || Enemy)
   checkRectangularCollision(entity) {
     return (
@@ -45,6 +46,7 @@ class GenericMovableObject {
       this.position.y + this.height > entity.position.y
     );
   }
+
   checkHorizontalCollision(entity) {
     if (!entity.isAlive) {
       return;
@@ -52,16 +54,13 @@ class GenericMovableObject {
     if (this.isSpawning) {
       return;
     }
-
     if (this.checkRectangularCollision(entity)) {
       if (entity.type === GOOMBA) {
         if (
           this.position.x >= entity.position.x &&
           this.position.y + this.height > entity.position.y + entity.height / 2
         ) {
-          console.log('spawn check with goomba');
           this.position.x = entity.position.x + entity.width;
-
           this.velocity.y = DEAD_JUMP;
           entity.velocity.x = 0;
           this.isJumping = true;
@@ -77,12 +76,12 @@ class GenericMovableObject {
             entity.velocity.x = 0;
             this.isJumping = true;
           }
-
           return true;
         }
       }
     }
   }
+
   checkVerticalCollision(entity) {
     if (!entity.isAlive) {
       return;
@@ -92,13 +91,13 @@ class GenericMovableObject {
         this.position.y + this.height <
         entity.position.y + entity.height / 2
       ) {
-        console.log('vertical');
         entity.isAlive = false;
         this.velocity.y = BOUNCE_BACK;
         return true;
       }
     }
   }
+
   checkBlockCollision(entity) {
     if (this.checkRectangularCollision(entity)) {
       if (entity.type === FLAG) {
@@ -109,9 +108,9 @@ class GenericMovableObject {
           globalObject.level.gameWin = true;
           console.log(globalObject.level.gameWin);
         }
-
         return;
       }
+
       if (
         entity.type === PIPE ||
         entity.type === STONE ||
@@ -120,17 +119,14 @@ class GenericMovableObject {
         entity.type === GROUND
       ) {
         if (
-          // this.position.y > entity.position.y &&
-          // this.velocity.y < 0 &&
-          // this.position.x + this.width > entity.position.x &&
-          // entity.position.x + entity.position.y > entity.position.x
           this.position.y > entity.position.y + entity.width / 2 &&
           this.velocity.y < 0
         ) {
-          console.log('bottom');
           this.position.y = entity.position.y + entity.height;
           this.velocity.y *= -1;
           if (entity.type === TREASURE) {
+            globalObject.level.score += 200;
+            console.log(globalObject.level.score);
             entity.isOpen = true;
             entity.spriteCoordinates[0] = 16 * 27;
             globalObject.level.powerUps.forEach((powerUp) => {
@@ -139,14 +135,12 @@ class GenericMovableObject {
                 powerUp.position.x + powerUp.width > entity.position.x
               ) {
                 powerUp.active = true;
-                globalObject.level.score += 200;
-                console.log(globalObject.level.score);
               }
             });
           }
           return;
         }
-        // left
+
         if (
           this.position.x < entity.position.x &&
           this.position.y >= entity.position.y
@@ -158,7 +152,7 @@ class GenericMovableObject {
           this.position.x = entity.position.x - this.width - 2;
           return;
         }
-        // right
+
         if (
           this.position.x > entity.position.x &&
           this.position.y >= entity.position.y
@@ -170,7 +164,7 @@ class GenericMovableObject {
           this.position.x = entity.position.x + entity.width + 2;
           return;
         }
-        // top
+
         if (
           this.position.y < entity.position.y - entity.height / 2 &&
           this.velocity.y > 0

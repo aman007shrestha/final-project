@@ -1,15 +1,8 @@
 import GenericMovableObject from './GenericMovableObject.js';
 import Sprite from './Sprite.js';
-import { TILE_WIDTH, TILE_HEIGHT, GOOMBA } from './Constants.js';
+import { TILE_WIDTH, TILE_HEIGHT } from './Constants.js';
 import { assetImage, globalObject } from './Main.js';
-import { Vector } from './Maths.js';
 import { useGravity } from './Utils.js';
-
-// class PowerUp extends GenericMovableObject {
-//   constructor(powerUpImg, name, position_x, position_y, width, height) {
-//     super(powerUpImg, name, position_x, position_y, width, height);
-//   }
-// }
 
 class PowerUpClass extends GenericMovableObject {
   constructor({ x, y }) {
@@ -20,6 +13,7 @@ class PowerUpClass extends GenericMovableObject {
     this.type = 'powerUp';
     this.isActive = false;
   }
+
   move(blocks) {
     if (
       this.position.x > -TILE_WIDTH &&
@@ -28,6 +22,7 @@ class PowerUpClass extends GenericMovableObject {
       useGravity(this);
     }
     this.position.x += this.velocity.x;
+
     blocks.forEach((block) => {
       if (
         block.position.x - this.position < TILE_WIDTH ||
@@ -37,7 +32,6 @@ class PowerUpClass extends GenericMovableObject {
       }
     });
   }
-  // update() {}
 }
 
 export { PowerUpClass };

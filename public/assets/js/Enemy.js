@@ -21,11 +21,13 @@ class Goomba extends Enemy {
     console.log(this);
     this.spriteSource = [115, 131];
   }
+
   move(blocks) {
     if (!this.isAlive) {
       this.sprite.sx = 147;
       return;
     }
+
     if (
       this.position.x > -TILE_WIDTH &&
       this.position.x < globalObject.canvas.width
@@ -34,11 +36,11 @@ class Goomba extends Enemy {
     }
 
     this.position.x += this.velocity.x;
-
     if (globalObject.frame % 15 === 0) {
       let currentSx = (globalObject.frame / 5) % this.spriteSource.length;
       this.sprite.sx = this.spriteSource[currentSx];
     }
+
     blocks.forEach((block) => {
       if (
         block.position.x - this.position < TILE_WIDTH ||
@@ -48,7 +50,6 @@ class Goomba extends Enemy {
       }
     });
   }
-  update() {}
 }
 
 export { Goomba };

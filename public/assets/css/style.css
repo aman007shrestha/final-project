@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
 @font-face {
-  font-family: 'myFirstFont';
+  font-family: 'marioFont';
   src: url('../font/mario.ttf') format('truetype');
 }
 body {
@@ -22,14 +22,16 @@ body {
 #main-game {
   /* border: 2px solid black; */
   background-color: var(--sky-color);
+  background-image: url('../image/clouds.png');
 }
 * {
-  font-family: 'myFirstFont', 'VT323', monospace;
+  font-family: 'marioFont', 'VT323', monospace;
 }
 .preloader {
   background-color: var(--clr-black);
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
   position: fixed;
   z-index: 2;
   display: flex;
@@ -49,11 +51,11 @@ body {
 }
 .intro {
   filter: blur(10px);
+  gap: 200px;
 }
 .intro--img {
   height: auto;
   max-width: 300px;
-  margin: auto;
 }
 .intro--buttons {
   font-family: myFirstFont;
@@ -179,6 +181,16 @@ body {
   top: 20px;
   left: 50px;
   width: 150px;
+  display: none;
+  cursor: pointer;
+  z-index: 2;
+}
+.night-mode {
+  position: absolute;
+  top: 25px;
+  left: 250px;
+  width: 40px;
+  display: none;
   cursor: pointer;
   z-index: 2;
 }
@@ -233,6 +245,40 @@ body {
   top: 10px;
   right: 10px;
   cursor: pointer;
+}
+.intro-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.intro--text {
+  width: 250px;
+  margin-left: 50px;
+}
+.intro-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.high-scores {
+  /* position: absolute; */
+  padding: 20px;
+  justify-self: flex-end;
+
+  width: 400px;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+}
+.high-scores h1 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+.score-wrapper {
+  display: flex;
+  font-size: 20px;
+  justify-content: space-between;
+  margin: 20px 0;
 }
 @keyframes spin {
   0% {

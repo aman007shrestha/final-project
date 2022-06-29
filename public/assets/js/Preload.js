@@ -11,22 +11,22 @@ const preLoader = () => {
     'tiles',
     'castle',
     'clouds',
-    'mountain',
-    'spritesheet',
     'marioIntro',
+    'spritesheet',
+    'mario1',
   ];
   let imageSrc = imagesSource.map((image) => `./assets/image/${image}.png`);
   const loadTiles = loadImage(imageSrc[0]);
   const loadCastle = loadImage(imageSrc[1]);
   const loadCloud = loadImage(imageSrc[2]);
-  const loadMountain = loadImage(imageSrc[3]);
+  const loadIntroText = loadImage(imageSrc[3]);
   const loadSpriteSheet = loadImage(imageSrc[4]);
   const marioImg = loadImage(imageSrc[5]);
   return Promise.all([
     loadTiles,
     loadCastle,
     loadCloud,
-    loadMountain,
+    loadIntroText,
     loadSpriteSheet,
     marioImg,
   ]);

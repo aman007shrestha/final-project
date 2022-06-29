@@ -11,7 +11,7 @@ let tilesImage;
 let castleImage;
 let assetImage;
 let cloudImage;
-let mountainImage;
+let marioIntroText;
 let level;
 let playerName;
 let globalObject;
@@ -19,8 +19,14 @@ let marioImg;
 
 class HomeScreen {
   constructor(marioImg) {
-    this.handlePlayerInfo();
-    // globalObject.canvas.style.display = 'none';
+    const playerName = localStorage.getItem('playerName');
+    console.log(playerName);
+    globalObject.playerName = playerName;
+    if (!playerName) {
+      Selectors.nameFormSelector.style.display = 'flex';
+      this.handlePlayerInfo();
+    }
+
     Selectors.mapEditor.style.display = 'none';
     Selectors.mainMenu.style.display = 'none';
 
@@ -31,10 +37,23 @@ class HomeScreen {
     if (globalObject.playerName) {
       this.intro.style.filter = 'blur(0px)';
     }
+    const introLeft = document.createElement('div');
+    introLeft.classList.add('intro-left');
+
+    const introText = document.createElement('img');
+    introText.src = marioIntroText.src;
+    introText.classList.add('intro--text');
+    introLeft.appendChild(introText);
+
     const introImg = document.createElement('img');
     introImg.src = marioImg.src;
     introImg.classList.add('intro--img');
-    this.intro.appendChild(introImg);
+    introLeft.appendChild(introImg);
+
+    this.intro.appendChild(introLeft);
+    Selectors.introRight = document.createElement('div');
+    Selectors.introRight.classList.add('intro-right');
+
     const buttonsWrapper = document.createElement('div');
     buttonsWrapper.classList.add('intro--buttons');
     buttonsWrapper.style.display = 'flex';
@@ -47,10 +66,14 @@ class HomeScreen {
     this.createMap = document.createElement('button');
     this.createMap.innerHTML = 'create map';
     buttonsWrapper.appendChild(this.createMap);
-    this.intro.appendChild(buttonsWrapper);
+    Selectors.introRight.appendChild(buttonsWrapper);
     Selectors.containerSelector.appendChild(this.intro);
+    Selectors.nightMode.style.display = 'hidden';
+    Selectors.highScore = document.createElement('div');
+    Selectors.introRight.appendChild(Selectors.highScore);
+    this.intro.appendChild(Selectors.introRight);
     this.defineEvents();
-    console.log('Home screen');
+    this.fetchScore();
   }
 
   defineEvents() {
@@ -61,7 +84,7 @@ class HomeScreen {
       }
       console.log('Play clicked');
       this.intro.style.display = 'none';
-      // globalObject.canvas.style.display = 'block';
+      Selectors.nightMode.style.display = 'block';
       globalObject.game = new Game(map);
     });
 
@@ -102,28 +125,65 @@ class HomeScreen {
       this.intro.style.filter = 'blur(0px)';
       globalObject.playerName = playerName;
       console.log(globalObject.playerName);
+      localStorage.setItem('playerName', playerName);
       Selectors.nameFormSelector.style.display = 'none';
+    });
+  }
+  async fetchScore() {
+    const response = await fetch('http://127.0.0.1:5005/api/score', {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+      },
+    });
+    const responseData = await response.json();
+    console.log(responseData.data);
+    this.renderHallOfFame(responseData.data);
+  }
+  renderHallOfFame(data) {
+    Selectors.highScore.classList.add('high-scores');
+    const heading = document.createElement('h1');
+    heading.innerHTML = 'HALL OF FAME';
+    Selectors.highScore.appendChild(heading);
+    const schema = document.createElement('div');
+    schema.classList.add('score-wrapper');
+    ['Name', 'Score', 'Timing'].forEach((title) => {
+      const titleElement = document.createElement('div');
+      titleElement.innerHTML = title;
+      schema.appendChild(titleElement);
+    });
+    Selectors.highScore.appendChild(schema);
+    data.forEach((datum) => {
+      const wrapper = document.createElement('div');
+      wrapper.classList.add('score-wrapper');
+      [datum.player, datum.score, datum.time].forEach((value) => {
+        const valueElement = document.createElement('div');
+        valueElement.innerHTML = value;
+        wrapper.appendChild(valueElement);
+      });
+      Selectors.highScore.appendChild(wrapper);
     });
   }
 }
 
 class Game {
-  constructor(map) {
-    // globalObject.canvas.style.display = 'block';
-    level = new LevelConsumer(map);
+  constructor(map, customLevel) {
+    level = new LevelConsumer(map, customLevel);
     Selectors.mainMenu.style.display = 'block';
     globalObject.level = level;
     this.update();
-    console.log('Globbball', globalObject);
   }
+
   update() {
     function play() {
       globalObject.frame += 1;
       level.update();
       globalObject.animationFrame = requestAnimationFrame(play);
     }
+
     play();
   }
+
   reset() {
     location.reload();
   }
@@ -136,18 +196,18 @@ preLoader()
       tilesSprite,
       castleSprite,
       cloudSprite,
-      mountainSprite,
+      introSprite,
       assetsSprite,
       mario,
     ]) => {
       tilesImage = tilesSprite;
       castleImage = castleSprite;
       cloudImage = cloudSprite;
-      mountainImage = mountainSprite;
+      marioIntroText = introSprite;
       assetImage = assetsSprite;
       Selectors.preloaderSelector.style.display = 'none';
       marioImg = mario;
-      Selectors.nameFormSelector.style.display = 'flex';
+
       return marioImg;
     }
   )
@@ -156,4 +216,12 @@ preLoader()
     globalObject.homescreen = new HomeScreen(marioImg);
   });
 
-export { globalObject, tilesImage, assetImage, HomeScreen, Game, marioImg };
+export {
+  globalObject,
+  tilesImage,
+  assetImage,
+  HomeScreen,
+  cloudImage,
+  Game,
+  marioImg,
+};

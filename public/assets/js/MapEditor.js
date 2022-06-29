@@ -20,7 +20,6 @@ import {
   FLAG_ID,
   EDITOR_SELECTOR_TILE_WIDTH,
   MAP_TILE_SIZE,
-  EDITOR_CANVAS_HEIGHT,
   RIGHT_SCROLL_OFFSET,
   EDITOR_CANVAS_WIDTH,
   ROWS_OF_TILES,
@@ -58,11 +57,10 @@ class MapEditor {
     this.canvas.width = EDITOR_CANVAS_WIDTH;
     this.canvas.classList.add('editor-canvas');
     Selectors.editorCanvas = this.canvas;
-    console.log('canvas added');
     Selectors.mapEditor.appendChild(this.canvas);
-
     this.column = Math.floor(this.maxWidth / MAP_TILE_SIZE);
     this.rightOffset = this.column * MAP_TILE_SIZE - this.canvas.width;
+
     Selectors.widthSelector.addEventListener('click', (e) => {
       e.preventDefault();
       this.maxWidth = Selectors.widthInput.value;
@@ -74,11 +72,8 @@ class MapEditor {
 
     const tileSelector = document.createElement('div');
     tileSelector.classList.add('tiles-wrapper');
-    console.log(tileSelector);
     Selectors.mapEditor.appendChild(tileSelector);
     Selectors.tileSelector = tileSelector;
-    console.log('tiles added');
-    console.log(Selectors);
 
     this.leftNavButton = this.addNavButtons(LEFT);
     this.rightNavButton = this.addNavButtons(RIGHT);
@@ -108,6 +103,7 @@ class MapEditor {
       this.drawSelectors(ctx, data);
     });
   }
+
   addNavButtons(direction) {
     let directionButton = document.createElement('button');
     directionButton.classList.add('nav__button');
@@ -119,6 +115,7 @@ class MapEditor {
     }
     return directionButton;
   }
+
   initMap(column) {
     this.mapData = [];
     for (let row = 0; row < ROWS_OF_TILES; row++) {
@@ -129,6 +126,7 @@ class MapEditor {
       this.mapData.push(rowData);
     }
   }
+
   handleSelect() {
     this.canvas.addEventListener('click', ({ offsetX, offsetY }) => {
       let rowIndex = Math.floor(offsetY / MAP_TILE_SIZE);
@@ -156,6 +154,7 @@ class MapEditor {
       }
     });
   }
+
   handleEvents() {
     // @desc Navbuttons handling
     this.rightNavButton.addEventListener('click', () => {
@@ -182,6 +181,7 @@ class MapEditor {
         }
       });
     });
+
     this.leftNavButton.addEventListener('click', () => {
       if (this.rightClickTracker <= 0) {
         notification('Reached Start of World');
@@ -203,14 +203,18 @@ class MapEditor {
         }
       });
     });
+
     Selectors.clearMap.addEventListener('click', () => {
       this.clearMap(this);
     });
+
     Selectors.saveMap.addEventListener('click', () => {
       this.saveMap();
     });
+
     Selectors.mainMenu.addEventListener('click', backMenu);
   }
+
   drawSelectors(ctx, data) {
     let spriteCoordinates;
     switch (data) {
@@ -270,6 +274,7 @@ class MapEditor {
         break;
     }
   }
+
   draw(ctx, image, spriteCoordinates) {
     ctx.drawImage(
       image,
@@ -280,12 +285,14 @@ class MapEditor {
       EDITOR_SELECTOR_TILE_WIDTH
     );
   }
+
   clearMap(object) {
     object.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     object.entities = [];
     object.mapData = [];
     object.initMap(object.column);
   }
+
   async saveMap() {
     if (this.canBeSaved) {
       const rawData = {

@@ -2,7 +2,6 @@ import Selectors from './DomSelector.js';
 import { Game } from './Main.js';
 import { globalObject } from './Main.js';
 import { notification, backMenu } from './Utils.js';
-import { HomeScreen, marioImg } from './Main.js';
 import { CLICK_EVENT, NONE } from './Constants.js';
 
 class SavedLevel {
@@ -29,7 +28,6 @@ class SavedLevel {
     levelsWrapper.classList.add('level-wrapper');
     Selectors.savedLevel.appendChild(levelsWrapper);
     Selectors.levelsWrapper = levelsWrapper;
-    console.log(responseData);
 
     responseData.map((data, i) => {
       const element = document.createElement('div');
@@ -60,10 +58,10 @@ class SavedLevel {
       levelInfo.addEventListener('click', () => {
         this.renderLevel(data._id);
       });
-
       Selectors.levelsWrapper.appendChild(element);
     });
   }
+
   async renderLevel(data_id) {
     const response = await fetch(`http://127.0.0.1:5005/api/map/${data_id}`, {
       method: 'GET',
@@ -72,10 +70,9 @@ class SavedLevel {
       },
     });
     const responseData = await response.json();
-    console.log(responseData.data.map);
     const map = responseData.data.map;
     Selectors.savedLevel.style.display = NONE;
-    new Game(map);
+    new Game(map, true);
   }
 
   async deleteSavedLevel(data, index, responseData) {
@@ -99,6 +96,7 @@ class SavedLevel {
       return;
     }
   }
+
   handleEvents() {
     Selectors.mainMenu.addEventListener(CLICK_EVENT, backMenu);
   }

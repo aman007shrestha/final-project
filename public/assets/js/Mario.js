@@ -23,13 +23,14 @@ class Mario extends GenericMovableObject {
     if (!this.isGrounded) {
       useGravity(this);
     }
+
     if (this.isDead) {
       [this.sprite.sx, this.sprite.sy, this.sprite.sw, this.sprite.sh] =
         marioSprite.small.dead;
       this.draw(globalObject.ctx);
-      console.log('is dead');
       return;
     }
+
     const frame = Math.floor((globalObject.frame % 24) / 8);
     if (this.isMoving && !this.isJumping) {
       [this.sprite.sx, this.sprite.sy, this.sprite.sw, this.sprite.sh] =
@@ -45,26 +46,35 @@ class Mario extends GenericMovableObject {
       }
     }
     if (this.position.y > globalObject.canvas.height) {
-      globalObject.level.lives -= 1;
-      globalObject.level.initObjects();
+      clearInterval(globalObject.level.timerInterval);
+      globalObject.level;
+      if (!this.isDead) {
+        globalObject.level.lives -= 1;
+      }
+      this.isDead = true;
+      setTimeout(() => {
+        globalObject.level.initObjects();
+      }, 3000);
     }
     this.draw(globalObject.ctx);
   }
+
   //@desc Responses to event listeners
   moveRight() {
     this.movingDirection = RIGHT;
     this.isMoving = true;
     this.position.x += this.velocity.x;
   }
+
   moveLeft() {
     this.isMoving = true;
     if (this.position.x <= 1) {
       return;
     }
-
     this.movingDirection = LEFT;
     this.position.x -= this.velocity.x;
   }
+
   jump() {
     this.isMoving = false;
     this.velocity.y -= 11.5;

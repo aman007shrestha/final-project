@@ -14,5 +14,6 @@ const Selectors = {
   saveMap: document.querySelector('.save__map'),
   savedLevel: document.querySelector('.saved__levels'),
   mainMenu: document.querySelector('.main-menu'),
+  nightMode: document.querySelector('.night-mode'),
 };
 export default Selectors;

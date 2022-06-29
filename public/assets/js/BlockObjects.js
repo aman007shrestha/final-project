@@ -27,7 +27,6 @@ import {
   PIPE_TOP_RIGHT_SPRITE,
   PIPE_BOTTOM_LEFT_SPRITE,
   PIPE_BOTTOM_RIGHT_SPRITE,
-  TREASURE_SPRITE,
   FLAG_SPRITE,
   FLAGPOLE_SPRITE,
   GOOMBA_SPRITE,
@@ -44,11 +43,8 @@ class BlockObject {
     this.width = size ? size : TILE_WIDTH;
     this.height = size ? size : TILE_HEIGHT;
     this.frame = 0;
-    this.tileIndex = [
-      Math.floor(this.position.x / TILE_WIDTH),
-      Math.floor(this.position.y / TILE_HEIGHT),
-    ];
   }
+
   initBlock = (ctx) => {
     switch (this.elementId) {
       case 0:
@@ -60,57 +56,68 @@ class BlockObject {
         this.spriteCoordinates = GROUND_SPRITE;
         this.drawBlock(ctx);
         break;
+
       case BRICK_ID:
         this.type = BRICK;
         this.spriteCoordinates = BRICK_SPRITE;
         this.drawBlock(ctx);
         break;
+
       case STONE_ID:
         this.type = STONE;
         this.spriteCoordinates = STONE_SPRITE;
         this.drawBlock(ctx);
         break;
+
       case PIPE_TOP_LEFT_ID:
         this.type = PIPE;
         this.spriteCoordinates = PIPE_TOP_LEFT_SPRITE;
         this.drawBlock(ctx);
         break;
+
       case PIPE_TOP_RIGHT_ID:
         this.type = PIPE;
         this.spriteCoordinates = PIPE_TOP_RIGHT_SPRITE;
         this.drawBlock(ctx);
         break;
+
       case PIPE_BOTTOM_LEFT_ID:
         this.type = PIPE;
         this.spriteCoordinates = PIPE_BOTTOM_LEFT_SPRITE;
         this.drawBlock(ctx);
         break;
+
       case PIPE_BOTTOM_RIGHT_ID:
         this.type = PIPE;
         this.spriteCoordinates = PIPE_BOTTOM_RIGHT_SPRITE;
         this.drawBlock(ctx);
         break;
+
       case TREASURE_ID:
         this.type = TREASURE;
         this.isOpen = false;
         this.spriteCoordinates = [16 * 24, 0, 16, 16];
         this.drawBlock(ctx);
         break;
+
       case FLAG_ID:
         this.type = FLAG;
         this.spriteCoordinates = FLAG_SPRITE;
         this.drawBlock(ctx);
         break;
+
       case FLAGPOLE_ID:
         this.type = FLAG;
         this.spriteCoordinates = FLAGPOLE_SPRITE;
         this.drawBlock(ctx);
         break;
+
       case GOOMBA_ID:
         this.type = ENEMY;
         this.spriteCoordinates = GOOMBA_SPRITE;
         this.drawBlock(ctx, this.elementId);
         break;
+
       case POWER_UP_ID:
         this.type = POWER_UP;
         this.spriteCoordinates = MUSHROOM_SPRITE;
@@ -118,6 +125,7 @@ class BlockObject {
         this.drawBlock(ctx, this.elementId);
     }
   };
+
   drawBlock(ctx, element) {
     this.frame += 1;
     if (element === 0) {
@@ -130,6 +138,7 @@ class BlockObject {
       );
       return;
     }
+
     if (element === GOOMBA_ID) {
       ctx.drawImage(
         assetImage,
@@ -141,6 +150,7 @@ class BlockObject {
       );
       return;
     }
+
     if (element === POWER_UP_ID) {
       ctx.drawImage(
         assetImage,
@@ -162,6 +172,7 @@ class BlockObject {
         }
       }
     }
+
     ctx.drawImage(
       tilesImage,
       ...this.spriteCoordinates,

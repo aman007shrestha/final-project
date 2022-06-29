@@ -1,10 +1,11 @@
 // @param accepts 2d array of entities id
 import BlockObject from './BlockObjects.js';
 import { Goomba } from './Enemy.js';
-import { assetImage, globalObject, HomeScreen, marioImg } from './Main.js';
+import { assetImage, globalObject, cloudImage } from './Main.js';
 import { backMenu } from './Utils.js';
 import { PowerUpClass } from './PowerUp.js';
 import Mario from './Mario.js';
+import { notification } from './Utils.js';
 import eventsInput from './Events.js';
 import {
   CANVAS_HEIGHT,
@@ -20,10 +21,12 @@ import {
 import Selectors from './DomSelector.js';
 
 class LevelConsumer {
-  constructor(levelMap) {
+  constructor(levelMap, customLevel) {
+    this.customLevel = customLevel;
     this.lives = DEFAULT_LIVES;
     this.gameWin;
     this.score = 0;
+    this.scoreSaved = false;
     this.levelMap = levelMap;
     this.canvas = document.createElement('canvas');
     this.canvas.height = CANVAS_HEIGHT;
@@ -34,17 +37,16 @@ class LevelConsumer {
     globalObject.ctx = globalObject.canvas.getContext('2d');
     globalObject.ctx.imageSmoothingEnabled = false;
     globalObject.currentPage = GAME_PAGE;
-
     this.initObjects();
     this.handleEvent();
   }
+
   initObjects() {
     this.entities = [];
     this.score = 0;
     this.timer = 0;
     this.timerInterval = setInterval(() => {
-      this.timer += 1;
-      console.log(this.timer);
+      this.timer++;
     }, 1000);
     this.enemies = [];
     this.powerUps = [];
@@ -91,12 +93,21 @@ class LevelConsumer {
   update() {
     if (this.gameWin) {
       clearInterval(this.timerInterval);
+      if (!this.customLevel) {
+        if (!this.scoreSaved) {
+          this.databaseScoreAppend();
+          this.scoreSaved = true;
+        }
+      }
+
+      console.log('won the game');
       // Win Animation
       // Send Backend request to save highscore {playerName, Timing, score}
     }
+
     if (this.lives <= 0) {
       this.gameWin = false;
-      console.log(gameWin);
+      console.log(this.gameWin);
     }
     globalObject.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     eventsInput.update(this.mario);
@@ -144,9 +155,9 @@ class LevelConsumer {
       // Enemy Mario collision check
       if (enemy.position.x < globalObject.canvas.width / 2 + TILE_WIDTH) {
         if (this.mario.isSpawning) {
-          console.log('spawn');
           return;
         }
+
         if (this.mario.hasStar && this.mario.checkRectangularCollision(enemy)) {
           console.log('enemyDied');
           this.score += 200;
@@ -187,7 +198,6 @@ class LevelConsumer {
           } else {
             this.mario.isDead = true;
             clearInterval(this.timerInterval);
-
             // Dead Animation
             this.lives -= 1;
             console.log(this.lives);
@@ -228,13 +238,54 @@ class LevelConsumer {
       });
     }
     this.mario.update(globalObject.ctx);
+    this.UiUpdate();
   }
   reset() {
     this.entities = [];
     this.enemies = [];
   }
+  UiUpdate() {
+    globalObject.ctx.font = '32px marioFont';
+    globalObject.ctx.fillStyle = 'white';
+    globalObject.ctx.fillText(`Lives ${this.lives}`, 600, 50);
+    globalObject.ctx.fillText(`Time ${this.timer}`, 800, 50);
+    globalObject.ctx.fillText(`Score ${this.score}`, 1000, 50);
+  }
   handleEvent() {
     Selectors.mainMenu.addEventListener(CLICK_EVENT, backMenu);
+    Selectors.nightMode.addEventListener(CLICK_EVENT, () => {
+      console.log('clicked');
+      if (Selectors.gameSelector.style.backgroundColor !== 'transparent') {
+        Selectors.gameSelector.style.backgroundColor = 'transparent';
+        Selectors.gameSelector.style.backgroundImage = 'none';
+      } else {
+        console.log(cloudImage);
+        // Selectors.gameSelector.style.backgroundImage =
+        //   "url('./public/assets/image/clouds.png')";
+        Selectors.gameSelector.style.backgroundColor = '#87ceeb';
+      }
+    });
+  }
+
+  async databaseScoreAppend() {
+    const rawData = {
+      player: globalObject.playerName,
+      score: this.score,
+      time: this.timer,
+    };
+    const jsonData = JSON.stringify(rawData);
+    console.log(jsonData);
+    const response = await fetch('http://127.0.0.1:5005/api/score', {
+      method: 'POST',
+      body: jsonData,
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+    });
+    const data = await response.json();
+    if (data.success) {
+      notification('Score Saved');
+    }
   }
 }
 
