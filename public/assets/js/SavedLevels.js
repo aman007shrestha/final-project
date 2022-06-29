@@ -9,6 +9,7 @@ class SavedLevel {
   constructor() {
     this.fetchData();
     this.handleEvents();
+    Selectors.mainMenu.style.display = 'block';
     globalObject.currentPage = 'savedLevel';
   }
 
@@ -28,8 +29,9 @@ class SavedLevel {
     levelsWrapper.classList.add('level-wrapper');
     Selectors.savedLevel.appendChild(levelsWrapper);
     Selectors.levelsWrapper = levelsWrapper;
+    console.log(responseData);
 
-    responseData.map((data) => {
+    responseData.map((data, i) => {
       const element = document.createElement('div');
       element.classList.add('saved-level');
 
@@ -39,10 +41,11 @@ class SavedLevel {
 
       const deleteLevel = document.createElement('div');
       deleteLevel.innerHTML = 'x';
+      deleteLevel.classList.add('delete-menu');
       element.appendChild(deleteLevel);
 
       deleteLevel.addEventListener('click', () => {
-        this.deleteSavedLevel(data);
+        this.deleteSavedLevel(data, i, responseData);
       });
 
       const levelName = document.createElement('div');
@@ -75,13 +78,26 @@ class SavedLevel {
     new Game(map);
   }
 
-  deleteSavedLevel(data) {
+  async deleteSavedLevel(data, index, responseData) {
     if (data.player !== globalObject.playerName) {
       notification('You are not author');
       return;
     }
-    console.log(data);
-    console.log(globalObject);
+    console.log(data, index);
+    const response = await fetch(`http://127.0.0.1:5005/api/map/${data._id}`, {
+      method: 'DELETE',
+      headers: {
+        accept: 'application/json',
+      },
+    });
+    const deleteResponse = await response.json();
+    if (deleteResponse.success) {
+      responseData.splice(index, 1);
+      console.log(responseData);
+      document.getElementsByClassName('saved-level')[index].remove();
+      notification('Map Deleted');
+      return;
+    }
   }
   handleEvents() {
     Selectors.mainMenu.addEventListener(CLICK_EVENT, backMenu);

@@ -13,7 +13,7 @@ const preLoader = () => {
     'clouds',
     'mountain',
     'spritesheet',
-    'mario',
+    'marioIntro',
   ];
   let imageSrc = imagesSource.map((image) => `./assets/image/${image}.png`);
   const loadTiles = loadImage(imageSrc[0]);

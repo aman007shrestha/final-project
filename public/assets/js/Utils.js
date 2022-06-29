@@ -10,7 +10,7 @@ import Selectors from './DomSelector.js';
 import { globalObject } from './Main.js';
 import { HomeScreen, marioImg } from './Main.js';
 const useGravity = (entity) => {
-  entity.velocity.y += 0.24;
+  entity.velocity.y += 0.3;
   entity.position.y += entity.velocity.y;
 };
 

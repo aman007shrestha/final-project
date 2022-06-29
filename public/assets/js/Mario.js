@@ -1,15 +1,8 @@
 import GenericMovableObject from './GenericMovableObject.js';
 import Sprite from './Sprite.js';
 import { useGravity } from './Utils.js';
-import { globalObject, assetImage } from './Main.js';
-import {
-  SPRITE_WIDTH,
-  SPRITE_HEIGHT,
-  marioSprite,
-  RIGHT,
-  LEFT,
-} from './Constants.js';
-let movingDirection;
+import { globalObject } from './Main.js';
+import { marioSprite, RIGHT, LEFT } from './Constants.js';
 
 class Mario extends GenericMovableObject {
   constructor(spritesheet, position_x, position_y, width, height) {
@@ -19,26 +12,11 @@ class Mario extends GenericMovableObject {
     this.isSpawning = false;
     this.isJumping = false;
     this.isMoving = false;
-    this.isBig = false;
+    this.size = 'small';
     this.hasStar = false;
     this.isGrounded = false;
     this.isDead = false;
-    // Load sprites for animation
-    movingDirection = 'right';
-    // Update sx and sy
-    // this.animation = {
-    //   small: {
-    //     leftWalk: {
-    //       [new Sprite(marioImg)]
-    //     },
-    //     rightWalk: {},
-    //     standRight: {},
-    //     standLeft: {},
-    //     jumpLeft: {},
-    //     jumpRight: {},
-    //   },
-    // };
-    console.log(this);
+    this.movingDirection = 'right';
   }
 
   update() {
@@ -46,27 +24,26 @@ class Mario extends GenericMovableObject {
       useGravity(this);
     }
     if (this.isDead) {
-      console.log('hey');
       [this.sprite.sx, this.sprite.sy, this.sprite.sw, this.sprite.sh] =
         marioSprite.small.dead;
       this.draw(globalObject.ctx);
+      console.log('is dead');
       return;
     }
     const frame = Math.floor((globalObject.frame % 24) / 8);
     if (this.isMoving && !this.isJumping) {
       [this.sprite.sx, this.sprite.sy, this.sprite.sw, this.sprite.sh] =
-        marioSprite.small[movingDirection][frame];
+        marioSprite[this.size][this.movingDirection][frame];
     } else {
       if (!this.isJumping) {
         [this.sprite.sx, this.sprite.sy, this.sprite.sw, this.sprite.sh] =
-          marioSprite.small.stand[movingDirection];
+          marioSprite[this.size].stand[this.movingDirection];
       }
       if (this.isJumping) {
         [this.sprite.sx, this.sprite.sy, this.sprite.sw, this.sprite.sh] =
-          marioSprite.small.jump[movingDirection];
+          marioSprite[this.size].jump[this.movingDirection];
       }
     }
-
     if (this.position.y > globalObject.canvas.height) {
       globalObject.level.lives -= 1;
       globalObject.level.initObjects();
@@ -75,7 +52,7 @@ class Mario extends GenericMovableObject {
   }
   //@desc Responses to event listeners
   moveRight() {
-    movingDirection = RIGHT;
+    this.movingDirection = RIGHT;
     this.isMoving = true;
     this.position.x += this.velocity.x;
   }
@@ -85,12 +62,12 @@ class Mario extends GenericMovableObject {
       return;
     }
 
-    movingDirection = LEFT;
+    this.movingDirection = LEFT;
     this.position.x -= this.velocity.x;
   }
   jump() {
     this.isMoving = false;
-    this.velocity.y -= 10;
+    this.velocity.y -= 11.5;
     this.isJumping = true;
     this.isGrounded = false;
   }

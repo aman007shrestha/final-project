@@ -142,7 +142,6 @@ class BlockObject {
       return;
     }
     if (element === POWER_UP_ID) {
-      // console.log('draw');
       ctx.drawImage(
         assetImage,
         ...this.spriteCoordinates,

@@ -51,6 +51,7 @@ class MapEditor {
     this.canBeSaved = false;
     this.selectedEntityId = 0;
     globalObject.currentPage = 'mapEditor';
+    Selectors.mainMenu.style.display = 'block';
     this.canvas = document.createElement('canvas');
     this.ctx = this.canvas.getContext('2d');
     this.canvas.height = ROWS_OF_TILES * MAP_TILE_SIZE;
@@ -224,127 +225,60 @@ class MapEditor {
         break;
       case GROUND_ID:
         spriteCoordinates = GROUND_SPRITE;
-        ctx.drawImage(
-          tilesImage,
-          ...spriteCoordinates,
-          0,
-          0,
-          EDITOR_SELECTOR_TILE_WIDTH,
-          EDITOR_SELECTOR_TILE_WIDTH
-        );
+        this.draw(ctx, tilesImage, spriteCoordinates);
         break;
       case BRICK_ID:
         spriteCoordinates = BRICK_SPRITE;
-        ctx.drawImage(
-          tilesImage,
-          ...spriteCoordinates,
-          0,
-          0,
-          EDITOR_SELECTOR_TILE_WIDTH,
-          EDITOR_SELECTOR_TILE_WIDTH
-        );
+        this.draw(ctx, tilesImage, spriteCoordinates);
         break;
       case STONE_ID:
         spriteCoordinates = STONE_SPRITE;
-        ctx.drawImage(
-          tilesImage,
-          ...spriteCoordinates,
-          0,
-          0,
-          EDITOR_SELECTOR_TILE_WIDTH,
-          EDITOR_SELECTOR_TILE_WIDTH
-        );
+        this.draw(ctx, tilesImage, spriteCoordinates);
         break;
       case PIPE_TOP_LEFT_ID:
         spriteCoordinates = PIPE_TOP_LEFT_SPRITE;
-        ctx.drawImage(
-          tilesImage,
-          ...spriteCoordinates,
-          0,
-          0,
-          EDITOR_SELECTOR_TILE_WIDTH,
-          EDITOR_SELECTOR_TILE_WIDTH
-        );
+        this.draw(ctx, tilesImage, spriteCoordinates);
         break;
       case PIPE_TOP_RIGHT_ID:
         spriteCoordinates = PIPE_TOP_RIGHT_SPRITE;
-        ctx.drawImage(
-          tilesImage,
-          ...spriteCoordinates,
-          0,
-          0,
-          EDITOR_SELECTOR_TILE_WIDTH,
-          EDITOR_SELECTOR_TILE_WIDTH
-        );
+        this.draw(ctx, tilesImage, spriteCoordinates);
         break;
       case PIPE_BOTTOM_LEFT_ID:
         spriteCoordinates = PIPE_BOTTOM_LEFT_SPRITE;
-        ctx.drawImage(
-          tilesImage,
-          ...spriteCoordinates,
-          0,
-          0,
-          EDITOR_SELECTOR_TILE_WIDTH,
-          EDITOR_SELECTOR_TILE_WIDTH
-        );
+        this.draw(ctx, tilesImage, spriteCoordinates);
         break;
       case PIPE_BOTTOM_RIGHT_ID:
         spriteCoordinates = PIPE_BOTTOM_RIGHT_SPRITE;
-        ctx.drawImage(
-          tilesImage,
-          ...spriteCoordinates,
-          0,
-          0,
-          EDITOR_SELECTOR_TILE_WIDTH,
-          EDITOR_SELECTOR_TILE_WIDTH
-        );
+        this.draw(ctx, tilesImage, spriteCoordinates);
         break;
       case TREASURE_ID:
         spriteCoordinates = TREASURE_SPRITE;
-        ctx.drawImage(
-          tilesImage,
-          ...spriteCoordinates,
-          0,
-          0,
-          EDITOR_SELECTOR_TILE_WIDTH,
-          EDITOR_SELECTOR_TILE_WIDTH
-        );
+        this.draw(ctx, tilesImage, spriteCoordinates);
         break;
       case FLAG_ID:
         spriteCoordinates = FLAG_SPRITE;
-        ctx.drawImage(
-          tilesImage,
-          ...spriteCoordinates,
-          0,
-          0,
-          EDITOR_SELECTOR_TILE_WIDTH,
-          EDITOR_SELECTOR_TILE_WIDTH
-        );
+        this.draw(ctx, tilesImage, spriteCoordinates);
         break;
       case FLAGPOLE_ID:
         spriteCoordinates = FLAGPOLE_SPRITE;
-        ctx.drawImage(
-          tilesImage,
-          ...spriteCoordinates,
-          0,
-          0,
-          EDITOR_SELECTOR_TILE_WIDTH,
-          EDITOR_SELECTOR_TILE_WIDTH
-        );
+        this.draw(ctx, tilesImage, spriteCoordinates);
         break;
       case GOOMBA_ID:
         console.log(this.selectedEntityId);
         spriteCoordinates = GOOMBA_SPRITE;
-        ctx.drawImage(
-          assetImage,
-          ...spriteCoordinates,
-          0,
-          0,
-          EDITOR_SELECTOR_TILE_WIDTH,
-          EDITOR_SELECTOR_TILE_WIDTH
-        );
+        this.draw(ctx, assetImage, spriteCoordinates);
         break;
     }
+  }
+  draw(ctx, image, spriteCoordinates) {
+    ctx.drawImage(
+      image,
+      ...spriteCoordinates,
+      0,
+      0,
+      EDITOR_SELECTOR_TILE_WIDTH,
+      EDITOR_SELECTOR_TILE_WIDTH
+    );
   }
   clearMap(object) {
     object.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);

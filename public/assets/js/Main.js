@@ -22,6 +22,7 @@ class HomeScreen {
     this.handlePlayerInfo();
     // globalObject.canvas.style.display = 'none';
     Selectors.mapEditor.style.display = 'none';
+    Selectors.mainMenu.style.display = 'none';
 
     this.intro = document.createElement('div');
     this.intro.classList.add('intro');
@@ -110,7 +111,7 @@ class Game {
   constructor(map) {
     // globalObject.canvas.style.display = 'block';
     level = new LevelConsumer(map);
-
+    Selectors.mainMenu.style.display = 'block';
     globalObject.level = level;
     this.update();
     console.log('Globbball', globalObject);

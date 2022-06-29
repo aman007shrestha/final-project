@@ -1,5 +1,5 @@
 import { Vector } from './Maths.js';
-import { globalObject, marioImg, tilesImage } from './Main.js';
+import { globalObject } from './Main.js';
 
 import {
   BOUNCE_BACK,
@@ -10,7 +10,6 @@ import {
   GROUND,
   PIPE,
   STONE,
-  TILE_HEIGHT,
   TREASURE,
 } from './Constants.js';
 
@@ -50,13 +49,19 @@ class GenericMovableObject {
     if (!entity.isAlive) {
       return;
     }
+    if (this.isSpawning) {
+      return;
+    }
+
     if (this.checkRectangularCollision(entity)) {
       if (entity.type === GOOMBA) {
         if (
           this.position.x >= entity.position.x &&
           this.position.y + this.height > entity.position.y + entity.height / 2
         ) {
+          console.log('spawn check with goomba');
           this.position.x = entity.position.x + entity.width;
+
           this.velocity.y = DEAD_JUMP;
           entity.velocity.x = 0;
           this.isJumping = true;
@@ -66,10 +71,13 @@ class GenericMovableObject {
           this.position.y + this.height > entity.position.y + entity.height / 2
         ) {
           this.position.x = entity.position.x - this.width;
-          this.velocity.x = 0;
-          this.velocity.y = DEAD_JUMP;
-          entity.velocity.x = 0;
-          this.isJumping = true;
+          if (this.size === 'small') {
+            this.velocity.x = 0;
+            this.velocity.y = DEAD_JUMP;
+            entity.velocity.x = 0;
+            this.isJumping = true;
+          }
+
           return true;
         }
       }
@@ -97,9 +105,11 @@ class GenericMovableObject {
         if (
           this.position.x + this.width >=
           entity.position.x + entity.width / 2
-        )
-          // Win Animation
-          alert('win case');
+        ) {
+          globalObject.level.gameWin = true;
+          console.log(globalObject.level.gameWin);
+        }
+
         return;
       }
       if (
@@ -110,26 +120,27 @@ class GenericMovableObject {
         entity.type === GROUND
       ) {
         if (
-          this.position.y > entity.position.y &&
-          this.velocity.y < 0 &&
-          this.position.x + this.width > entity.position.x &&
-          entity.position.x + entity.position.y > entity.position.x
+          // this.position.y > entity.position.y &&
+          // this.velocity.y < 0 &&
+          // this.position.x + this.width > entity.position.x &&
+          // entity.position.x + entity.position.y > entity.position.x
+          this.position.y > entity.position.y + entity.width / 2 &&
+          this.velocity.y < 0
         ) {
+          console.log('bottom');
           this.position.y = entity.position.y + entity.height;
           this.velocity.y *= -1;
           if (entity.type === TREASURE) {
             entity.isOpen = true;
             entity.spriteCoordinates[0] = 16 * 27;
-            console.log(entity.position.x);
             globalObject.level.powerUps.forEach((powerUp) => {
-              console.log(powerUp);
               if (
                 powerUp.position.x < entity.position.x + entity.width &&
                 powerUp.position.x + powerUp.width > entity.position.x
               ) {
-                console.log('po');
-                console.log(powerUp);
                 powerUp.active = true;
+                globalObject.level.score += 200;
+                console.log(globalObject.level.score);
               }
             });
           }
@@ -140,7 +151,11 @@ class GenericMovableObject {
           this.position.x < entity.position.x &&
           this.position.y >= entity.position.y
         ) {
-          this.position.x = entity.position.x - this.width;
+          if (this.type === 'goomba' || this.type === 'powerUp') {
+            this.velocity.x *= -1;
+            return;
+          }
+          this.position.x = entity.position.x - this.width - 2;
           return;
         }
         // right
@@ -148,15 +163,17 @@ class GenericMovableObject {
           this.position.x > entity.position.x &&
           this.position.y >= entity.position.y
         ) {
-          this.position.x = entity.position.x + entity.width;
+          if (this.type === 'goomba' || this.type === 'powerUp') {
+            this.velocity.x *= -1;
+            return;
+          }
+          this.position.x = entity.position.x + entity.width + 2;
           return;
         }
         // top
         if (
-          this.position.y < entity.position.y &&
-          this.velocity.y >= 0 &&
-          this.position.x + this.width > entity.position.x &&
-          entity.position.x + entity.position.y > this.position.x
+          this.position.y < entity.position.y - entity.height / 2 &&
+          this.velocity.y > 0
         ) {
           this.position.y = entity.position.y - this.height - 1;
           this.velocity.y = 1;
