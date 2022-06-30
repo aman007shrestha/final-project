@@ -2,20 +2,19 @@ import { preLoader } from './Preload.js';
 import { map } from './Constants.js';
 import LevelConsumer from './LevelConsumer.js';
 import Selectors from './DomSelector.js';
-// import globalObject from './GlobalObect.js';
 import MapEditor from './MapEditor.js';
 import SavedLevel from './SavedLevels.js';
 import { notification } from './Utils.js';
 import GlobalObject from './GlobalObect.js';
+import MarioAudio from './MarioAudio.js';
 let tilesImage;
-let castleImage;
 let assetImage;
 let cloudImage;
 let marioIntroText;
 let level;
-let playerName;
 let globalObject;
 let marioImg;
+let castleImage;
 
 class HomeScreen {
   constructor(marioImg) {
@@ -213,6 +212,8 @@ preLoader()
   )
   .then((marioImg) => {
     globalObject = new GlobalObject();
+    globalObject.sounds = new MarioAudio();
+    console.log(globalObject.sounds, 'Here');
     globalObject.homescreen = new HomeScreen(marioImg);
   });
 

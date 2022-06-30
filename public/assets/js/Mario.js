@@ -16,6 +16,7 @@ class Mario extends GenericMovableObject {
     this.hasStar = false;
     this.isGrounded = false;
     this.isDead = false;
+    this.isControllable = true;
     this.movingDirection = 'right';
   }
 
@@ -61,12 +62,18 @@ class Mario extends GenericMovableObject {
 
   //@desc Responses to event listeners
   moveRight() {
+    if (!this.isControllable) {
+      return;
+    }
     this.movingDirection = RIGHT;
     this.isMoving = true;
     this.position.x += this.velocity.x;
   }
 
   moveLeft() {
+    if (!this.isControllable) {
+      return;
+    }
     this.isMoving = true;
     if (this.position.x <= 1) {
       return;
@@ -76,6 +83,10 @@ class Mario extends GenericMovableObject {
   }
 
   jump() {
+    if (!this.isControllable) {
+      return;
+    }
+    globalObject.sounds.jump.play();
     this.isMoving = false;
     this.velocity.y -= 11.5;
     this.isJumping = true;

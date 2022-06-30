@@ -261,7 +261,6 @@ body {
   justify-content: space-between;
 }
 .high-scores {
-  /* position: absolute; */
   padding: 20px;
   justify-self: flex-end;
 

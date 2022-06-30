@@ -106,6 +106,7 @@ class GenericMovableObject {
           entity.position.x + entity.width / 2
         ) {
           globalObject.level.gameWin = true;
+          globalObject.level.mario.isControllable = false;
           console.log(globalObject.level.gameWin);
         }
         return;
@@ -125,6 +126,7 @@ class GenericMovableObject {
           this.position.y = entity.position.y + entity.height;
           this.velocity.y *= -1;
           if (entity.type === TREASURE) {
+            globalObject.sounds.coin.play();
             globalObject.level.score += 200;
             console.log(globalObject.level.score);
             entity.isOpen = true;

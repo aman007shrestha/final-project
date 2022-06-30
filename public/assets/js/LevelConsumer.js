@@ -99,9 +99,9 @@ class LevelConsumer {
           this.scoreSaved = true;
         }
       }
-
       console.log('won the game');
       // Win Animation
+
       // Send Backend request to save highscore {playerName, Timing, score}
     }
 
@@ -160,6 +160,7 @@ class LevelConsumer {
 
         if (this.mario.hasStar && this.mario.checkRectangularCollision(enemy)) {
           console.log('enemyDied');
+          globalObject.sounds.stomp.play();
           this.score += 200;
           console.log(this.score);
           enemy.isALive = false;
@@ -172,6 +173,7 @@ class LevelConsumer {
         }
         if (this.mario.checkVerticalCollision(enemy)) {
           console.log('enemyDead');
+          globalObject.sounds.stomp.play();
           this.score += 200;
           console.log(this.score);
           enemy.isALive = false;
@@ -188,6 +190,7 @@ class LevelConsumer {
         if (this.mario.checkHorizontalCollision(enemy)) {
           console.log('Big guy check collision to turn to small guy');
           if (this.mario.size === 'big') {
+            globalObject.sounds.powerDown.play();
             this.mario.size = 'small';
             this.mario.height = TILE_HEIGHT;
             console.log('He is small and spawning');
@@ -197,7 +200,9 @@ class LevelConsumer {
             }, 2000);
           } else {
             this.mario.isDead = true;
+            globalObject.sounds.marioDeath.play();
             clearInterval(this.timerInterval);
+            this.mario.isControllable = false;
             // Dead Animation
             this.lives -= 1;
             console.log(this.lives);
@@ -205,7 +210,7 @@ class LevelConsumer {
             setTimeout(() => {
               this.mario.isDead = false;
               this.initObjects();
-            }, 2000);
+            }, 5000);
           }
         }
         return;
@@ -230,6 +235,7 @@ class LevelConsumer {
               if (this.powerUps.indexOf(powerUp) > -1) {
                 this.powerUps.splice(this.powerUps.indexOf(powerUp), 1);
               }
+              globalObject.sounds.powerUp.play();
               this.mario.size = 'big';
               this.mario.height = 60;
             }, 200);
