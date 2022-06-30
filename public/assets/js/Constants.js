@@ -2,9 +2,14 @@ export const CANVAS_HEIGHT = 600;
 export const CANVAS_WIDTH = 1200;
 
 // API
-export const SCORE_API = 'http://127.0.0.1:5005/api/score/';
-export const MAP_API = 'http://127.0.0.1:5005/api/map/';
-export const MESSAGE_API = 'http://127.0.0.1:5005/api/message/';
+const ROOT_ENTRY = 'https://finalprojectbackend.aman007shrestha.repl.co/';
+// export const SCORE_API = 'http://127.0.0.1:5005/api/score/';
+// export const MAP_API = 'http://127.0.0.1:5005/api/map/';
+// export const MESSAGE_API = 'http://127.0.0.1:5005/api/message/';
+export const SCORE_API = ROOT_ENTRY + 'api/score/';
+export const MAP_API = ROOT_ENTRY + 'api/map/';
+export const MESSAGE_API = ROOT_ENTRY + 'api/message/';
+// finalprojectbackend.aman007shrestha.repl.co/
 
 // Mario Class
 export const MARIO = 'mario';
