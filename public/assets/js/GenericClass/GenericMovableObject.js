@@ -1,19 +1,34 @@
 import { Vector } from '../Utilities/Maths.js';
 import { globalObject } from '../Main.js';
 import {
+  MARIO_SMALL,
   BOUNCE_BACK,
-  BRICK,
   DEAD_JUMP,
+  BRICK,
   FLAG,
   GOOMBA,
   GROUND,
   PIPE,
   STONE,
   TREASURE,
+  POWER_UP,
+  TREASURE_OPEN_X,
+  CANVAS_HEIGHT,
 } from '../Constants.js';
 
-// @desc takes image off the spriteSheet along with name of object and the location of where to draw the image
+/**
+ * class create object for all movable objects
+ */
 class GenericMovableObject {
+  /**
+   *
+   * @param {img} sprite sprite images of entity
+   * @param {String} name name of movable object
+   * @param {Number} position_x x position of movable object
+   * @param {Number} position_y y position of movable object
+   * @param {Number} width width of movable object
+   * @param {Number} height height of movable object
+   */
   constructor(sprite, name, position_x, position_y, width, height) {
     this.velocity = new Vector(0, 0);
     this.position = new Vector(position_x, position_y);
@@ -22,7 +37,9 @@ class GenericMovableObject {
     this.width = width;
     this.height = height;
   }
-
+  /**
+   * @desc draw entity
+   */
   draw() {
     globalObject.drawImagesOnCanvasFromSprite(
       this.sprite.image,
@@ -37,7 +54,11 @@ class GenericMovableObject {
     );
   }
 
-  //@desc Rectangle collision with mario & (block || coin || Powerup || Enemy)
+  /**
+   *
+   * @param {Object} entity Entity whose collision is to be checked agains this object
+   * @returns Bool
+   */
   checkRectangularCollision(entity) {
     return (
       this.position.x < entity.position.x + entity.width &&
@@ -46,8 +67,13 @@ class GenericMovableObject {
       this.position.y + this.height > entity.position.y
     );
   }
-
+  /**
+   *
+   * @param {Object} entity Entity whose collision is to be checked agains this object
+   * @returns Null, True
+   */
   checkHorizontalCollision(entity) {
+    // no collision check if entity is dead or mario is spawning
     if (!entity.isAlive) {
       return;
     }
@@ -70,7 +96,7 @@ class GenericMovableObject {
           this.position.y + this.height > entity.position.y + entity.height / 2
         ) {
           this.position.x = entity.position.x - this.width;
-          if (this.size === 'small') {
+          if (this.size === MARIO_SMALL) {
             this.velocity.x = 0;
             this.velocity.y = DEAD_JUMP;
             entity.velocity.x = 0;
@@ -81,7 +107,11 @@ class GenericMovableObject {
       }
     }
   }
-
+  /**
+   *
+   * @param {Object} entity entity Entity whose collision is to be checked agains this object
+   * @returns Null, True
+   */
   checkVerticalCollision(entity) {
     if (!entity.isAlive) {
       return;
@@ -97,21 +127,27 @@ class GenericMovableObject {
       }
     }
   }
-
+  /**
+   *
+   * @param {Object} entity entity entity Entity whose collision is to be checked agains this object
+   * @returns true, Null
+   */
   checkBlockCollision(entity) {
     if (this.checkRectangularCollision(entity)) {
-      if (entity.type === FLAG) {
+      // Collision with flag leads to game win
+      if (entity.type === FLAG && !globalObject.level.gameWin) {
         if (
-          this.position.x + this.width >=
+          this.position.x + this.width / 2 >=
           entity.position.x + entity.width / 2
         ) {
           globalObject.level.gameWin = true;
+          globalObject.level.flagScore =
+            Math.floor(CANVAS_HEIGHT - globalObject.level.mario.position.y) * 5;
           globalObject.level.mario.isControllable = false;
-          console.log(globalObject.level.gameWin);
         }
         return;
       }
-
+      // Collision with other entities leads to positioning set of movable objects
       if (
         entity.type === PIPE ||
         entity.type === STONE ||
@@ -120,17 +156,17 @@ class GenericMovableObject {
         entity.type === GROUND
       ) {
         if (
-          this.position.y > entity.position.y + entity.width / 2 &&
+          this.position.y > entity.position.y + entity.height / 2 &&
           this.velocity.y < 0
         ) {
           this.position.y = entity.position.y + entity.height;
           this.velocity.y *= -1;
           if (entity.type === TREASURE) {
             globalObject.sounds.coin.play();
+            globalObject.level.coins += 1;
             globalObject.level.score += 200;
-            console.log(globalObject.level.score);
             entity.isOpen = true;
-            entity.spriteCoordinates[0] = 16 * 27;
+            entity.spriteCoordinates[0] = TREASURE_OPEN_X;
             globalObject.level.powerUps.forEach((powerUp) => {
               if (
                 powerUp.position.x < entity.position.x + entity.width &&
@@ -147,7 +183,7 @@ class GenericMovableObject {
           this.position.x < entity.position.x &&
           this.position.y >= entity.position.y
         ) {
-          if (this.type === 'goomba' || this.type === 'powerUp') {
+          if (this.type === GOOMBA || this.type === POWER_UP) {
             this.velocity.x *= -1;
             return;
           }
@@ -159,7 +195,7 @@ class GenericMovableObject {
           this.position.x > entity.position.x &&
           this.position.y >= entity.position.y
         ) {
-          if (this.type === 'goomba' || this.type === 'powerUp') {
+          if (this.type === GOOMBA || this.type === POWER_UP) {
             this.velocity.x *= -1;
             return;
           }

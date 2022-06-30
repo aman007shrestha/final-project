@@ -9,7 +9,7 @@ let assetImage;
 let itemsImage;
 let marioIntroText;
 let marioImg;
-let castleImage;
+let cloudsImage;
 
 /**
  * level - instance of level consumer
@@ -55,14 +55,14 @@ preLoader()
   .then(
     ([
       tilesSprite,
-      castleSprite,
+      cloudSprite,
       itemSprite,
       introSprite,
       assetsSprite,
       mario,
     ]) => {
       tilesImage = tilesSprite;
-      castleImage = castleSprite;
+      cloudsImage = cloudSprite;
       itemsImage = itemSprite;
       marioIntroText = introSprite;
       assetImage = assetsSprite;
@@ -88,4 +88,5 @@ export {
   Game,
   marioImg,
   marioIntroText,
+  cloudsImage,
 };

@@ -17,7 +17,6 @@ class PowerUpClass extends GenericMovableObject {
    * @param {Number} x, y position of powerUp
    */
   constructor({ x, y }) {
-    console.log(x, y);
     let powerUpImg = new Sprite(assetImage, 625, 5, 16, 16);
     super(powerUpImg, POWER_UP, x, y, TILE_WIDTH, TILE_HEIGHT);
     this.velocity.set(...POWER_UP_VELOCITY);

@@ -21,14 +21,14 @@ const preLoader = () => {
   // creates src based on just name of image
   let imageSrc = imagesSource.map((image) => `./assets/image/${image}.png`);
   const loadTiles = loadImage(imageSrc[0]);
-  const loadCastle = loadImage(imageSrc[1]);
+  const loadClouds = loadImage(imageSrc[1]);
   const loadItems = loadImage(imageSrc[2]);
   const loadIntroText = loadImage(imageSrc[3]);
   const loadSpriteSheet = loadImage(imageSrc[4]);
   const marioImg = loadImage(imageSrc[5]);
   return Promise.all([
     loadTiles,
-    loadCastle,
+    loadClouds,
     loadItems,
     loadIntroText,
     loadSpriteSheet,

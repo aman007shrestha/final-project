@@ -11,6 +11,7 @@ class MarioAudio {
     this.marioDeath = new Audio('./assets/sounds/mario_death.wav');
     this.powerDown = new Audio('./assets/sounds/powerdown.wav');
     this.powerUp = new Audio('./assets/sounds/powerup.wav');
+    this.gameWin = new Audio('./assets/sounds/win.wav');
   }
 }
 export default MarioAudio;

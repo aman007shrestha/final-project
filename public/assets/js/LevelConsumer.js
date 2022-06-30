@@ -1,7 +1,7 @@
 // @param accepts 2d array of entities id
 import BlockObject from './GenericClass/BlockObjects.js';
 import { Goomba } from './EntityClass/Enemy.js';
-import { assetImage, globalObject } from './Main.js';
+import { assetImage, globalObject, cloudsImage } from './Main.js';
 import { backMenu } from './Utilities/Utils.js';
 import { PowerUpClass } from './EntityClass/PowerUp.js';
 import Mario from './EntityClass/Mario.js';
@@ -19,6 +19,38 @@ import {
   POWER_UP_ID,
   MARIO_INITIAL_POSITION_X,
   MARIO_INITIAL_POSITION_Y,
+  EMPTY_OBJECT,
+  BLOCK_OBJECT_RANGE,
+  BLOCK_OBJECT_PIPE_RANGE,
+  ENEMY_OBJECT_RANGE,
+  VIEWPORT_REDUCTION,
+  GOOMBA,
+  ENEMY_REMOVAL_INTERVAL,
+  MARIO_BIG,
+  MARIO_SMALL,
+  MARIO_SPAWN_INTERVAL,
+  MARIO_DEAD_ANIMATION_INTERVAL,
+  BIG_MARIO_HEIGHT,
+  SMALL_MARIO_HEIGHT,
+  POWERUP_CONSUME_INTERVAL,
+  GAME_INFO_SCORE_X,
+  GAME_INFO_TIMER_X,
+  GAME_INFO_LIVES_X,
+  GAME_INFO_Y,
+  GAME_INFO_COINS_X,
+  SKY_COLOR,
+  SCORE_API,
+  MESSAGE_API,
+  GROUND,
+  FLAG,
+  BLACK,
+  NONE,
+  WRITE_CENTER_Y,
+  WRITE_CENTER_X,
+  WIN_MSG,
+  LOSE_MSG,
+  WHITE,
+  MARIO_SPRITE,
 } from './Constants.js';
 import Selectors from './Utilities/DomSelector.js';
 
@@ -35,7 +67,7 @@ class LevelConsumer {
     this.customLevel = customLevel;
     this.levelMap = levelMap;
     this.lives = DEFAULT_LIVES;
-    this.score = 0;
+    this.flagScore;
     this.gameWin;
     this.scoreSaved = false;
     // create canvas and add to Selectors attributes gameCanvas
@@ -66,6 +98,7 @@ class LevelConsumer {
 
     this.score = 0;
     this.timer = 0;
+    this.coins = 0;
     this.timerInterval = setInterval(() => {
       this.timer++;
     }, 1000);
@@ -79,9 +112,14 @@ class LevelConsumer {
     );
     // Intialize input events
     eventsInput.init(this.mario);
+    // Iterate map and create objects based on ID
     this.levelMap.forEach((row, i) => {
       row.forEach((elementId, j) => {
-        if (elementId !== 0 && (elementId <= 10 || elementId > 400)) {
+        if (
+          elementId !== EMPTY_OBJECT &&
+          (elementId <= BLOCK_OBJECT_RANGE ||
+            elementId > BLOCK_OBJECT_PIPE_RANGE)
+        ) {
           this.entities.push(
             new BlockObject({
               position: {
@@ -91,7 +129,10 @@ class LevelConsumer {
               elementId,
             })
           );
-        } else if (elementId > 10 && elementId <= 20) {
+        } else if (
+          elementId > BLOCK_OBJECT_RANGE &&
+          elementId <= ENEMY_OBJECT_RANGE
+        ) {
           if (elementId === GOOMBA_ID) {
             this.enemies.push(
               new Goomba({
@@ -101,7 +142,6 @@ class LevelConsumer {
             );
           }
         } else if (elementId === POWER_UP_ID) {
-          console.log(i, j);
           this.powerUps.push(
             new PowerUpClass({
               x: TILE_WIDTH * j,
@@ -111,53 +151,105 @@ class LevelConsumer {
         }
       });
     });
+    // initBlock assigns coordinates in sprite to entities object based off their elementId
     this.entities.forEach((entity) => {
       entity.initBlock(globalObject.ctx);
     });
   }
-
+  /**
+   * @desc check collisions , write scores on each frame, check gameWin and send score to database
+   *
+   * @returns in game win, mario dead, enemy dead
+   */
   update() {
+    // clear timerInterval, append once to database, animate win scenario if win return
     if (this.gameWin) {
+      globalObject.sounds.gameWin.play();
       clearInterval(this.timerInterval);
-      if (!this.customLevel) {
-        if (!this.scoreSaved) {
+      if (this.mario.size === MARIO_SMALL) {
+        [
+          this.mario.sprite.sx,
+          this.mario.sprite.sy,
+          this.mario.sprite.sh,
+          this.mario.sprite.sh,
+        ] = MARIO_SPRITE.small.win;
+      } else {
+        [
+          this.mario.sprite.sx,
+          this.mario.sprite.sy,
+          this.mario.sprite.sh,
+          this.mario.sprite.sh,
+        ] = MARIO_SPRITE.big.win;
+      }
+
+      while (this.flagScore !== 0) {
+        this.score += 1;
+        this.flagScore -= 1;
+      }
+      if (!this.scoreSaved) {
+        if (!this.customLevel) {
           this.databaseScoreAppend();
+          this.scoreSaved = true;
+        } else if (this.customLevel) {
+          this.sendGlobalMessage(this.customLevel);
           this.scoreSaved = true;
         }
       }
-      console.log('won the game');
-      // Win Animation
-
-      // Send Backend request to save highscore {playerName, Timing, score}
+      globalObject.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      this.mario.position.y += 1;
+      this.entities.forEach((entity) => {
+        entity.drawBlock(globalObject.ctx);
+        this.mario.checkBlockCollision(entity);
+      });
+      this.mario.draw();
+      this.UiUpdate();
+      setTimeout(() => {
+        cancelAnimationFrame(globalObject.animationFrame);
+        globalObject.ctx.fillStyle = BLACK;
+        globalObject.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        this.UiUpdate();
+      }, 3000);
       return;
     }
 
     if (this.lives <= 0) {
       this.gameWin = false;
-      console.log(this.gameWin);
+      setTimeout(() => {
+        cancelAnimationFrame(globalObject.animationFrame);
+        globalObject.ctx.fillStyle = 'black';
+        globalObject.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        this.UiUpdate();
+      }, 3000);
+      return;
     }
+    // clear canvas
     globalObject.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    // update mario position based on events
     eventsInput.update(this.mario);
+    // if mario is position at half canvas width, scroll screen by reducing viewport pixels from each objects
     let viewPortFraction;
     if (this.mario.position.x >= globalObject.canvas.width / 2) {
-      this.mario.position.x -= 2;
-      viewPortFraction = 2;
+      this.mario.position.x -= VIEWPORT_REDUCTION;
+      viewPortFraction = VIEWPORT_REDUCTION;
     } else {
       viewPortFraction = 0;
     }
     this.powerUps.forEach((powerUp) => {
       powerUp.position.x -= viewPortFraction;
     });
+    // Draw entities only for visible canvas range, reduce viewport
     this.entities.forEach((blockObject) => {
+      // viewport reduction
       if (blockObject.position.x > -TILE_WIDTH) {
         blockObject.position.x = blockObject.position.x - viewPortFraction;
       }
-      //draw entity only for visible range
+      // draw for visible range
       if (
         blockObject.position.x > -TILE_WIDTH &&
         blockObject.position.x < globalObject.canvas.width
       ) {
         blockObject.drawBlock(globalObject.ctx);
+        // check collsions only for entities whose x position is less than half width of canvas
         if (
           blockObject.position.x <
           globalObject.canvas.width / 2 + TILE_WIDTH
@@ -166,6 +258,7 @@ class LevelConsumer {
         }
       }
     });
+    // reduce enemy by viewport, move enemy
     this.enemies.forEach((enemy) => {
       if (enemy.position.x > -TILE_WIDTH) {
         enemy.position.x = enemy.position.x - viewPortFraction;
@@ -175,77 +268,73 @@ class LevelConsumer {
         enemy.position.x < globalObject.canvas.width
       ) {
         enemy.draw();
-        if (enemy.type === 'goomba') {
+        // apply movement logics on goomba
+        if (enemy.type === GOOMBA) {
           enemy.move(this.entities);
         }
       }
-      // Enemy Mario collision check
+      // Enemy Mario collision check, if Spawning return back
       if (enemy.position.x < globalObject.canvas.width / 2 + TILE_WIDTH) {
         if (this.mario.isSpawning) {
           return;
         }
-
+        // Star power kills enemy
         if (this.mario.hasStar && this.mario.checkRectangularCollision(enemy)) {
-          console.log('enemyDied');
           globalObject.sounds.stomp.play();
           this.score += 200;
-          console.log(this.score);
           enemy.isALive = false;
+          // remove enemy object from array
           setTimeout(() => {
             if (this.enemies.indexOf(enemy) > -1) {
               this.enemies.splice(this.enemies.indexOf(enemy), 1);
             }
-          }, 2000);
+          }, ENEMY_REMOVAL_INTERVAL);
           return;
         }
+        // check mario vertical collision with enemy -> enemy death
         if (this.mario.checkVerticalCollision(enemy)) {
-          console.log('enemyDead');
           globalObject.sounds.stomp.play();
           this.score += 200;
-          console.log(this.score);
           enemy.isALive = false;
           enemy.velocity.x = 0;
-          console.log(enemy);
           setTimeout(() => {
             if (this.enemies.indexOf(enemy) > -1) {
               this.enemies.splice(this.enemies.indexOf(enemy), 1);
             }
-          }, 2000);
+          }, ENEMY_REMOVAL_INTERVAL);
           return;
         }
-
+        // check horizontal collision between mario and enemy
         if (this.mario.checkHorizontalCollision(enemy)) {
-          console.log('Big guy check collision to turn to small guy');
-          if (this.mario.size === 'big') {
+          // big mario turns back to small while surviving following enemy attack under spawing period
+          if (this.mario.size === MARIO_BIG) {
             globalObject.sounds.powerDown.play();
-            this.mario.size = 'small';
-            this.mario.height = TILE_HEIGHT;
-            console.log('He is small and spawning');
+            this.mario.size = MARIO_SMALL;
+            this.mario.height = SMALL_MARIO_HEIGHT;
             this.mario.isSpawning = true;
             setTimeout(() => {
               this.mario.isSpawning = false;
-            }, 2000);
+            }, MARIO_SPAWN_INTERVAL);
           } else {
             this.mario.isDead = true;
             globalObject.sounds.marioDeath.play();
             clearInterval(this.timerInterval);
             this.mario.isControllable = false;
-            // Dead Animation
             this.lives -= 1;
-            console.log(this.lives);
             this.score = 0;
             setTimeout(() => {
               this.mario.isDead = false;
               this.initObjects();
-            }, 5000);
+            }, MARIO_DEAD_ANIMATION_INTERVAL);
           }
         }
         return;
       }
     });
-
+    // check powerUp collision only when there is one in powerUp array
     if (this.powerUps.length > 0) {
       this.powerUps.forEach((powerUp) => {
+        // power up becomes active only when treasure box is popped
         if (powerUp.active) {
           if (powerUp.position.x > -TILE_WIDTH) {
             powerUp.position.x = powerUp.position.x - viewPortFraction;
@@ -263,9 +352,9 @@ class LevelConsumer {
                 this.powerUps.splice(this.powerUps.indexOf(powerUp), 1);
               }
               globalObject.sounds.powerUp.play();
-              this.mario.size = 'big';
-              this.mario.height = 60;
-            }, 200);
+              this.mario.size = MARIO_BIG;
+              this.mario.height = BIG_MARIO_HEIGHT;
+            }, POWERUP_CONSUME_INTERVAL);
           }
         }
       });
@@ -273,33 +362,70 @@ class LevelConsumer {
     this.mario.update(globalObject.ctx);
     this.UiUpdate();
   }
+  /**
+   * @desc resets entities
+   */
   reset() {
     this.entities = [];
     this.enemies = [];
+    this.powerUps = [];
   }
+  /**
+   * @desc write score lives timer on each frame
+   */
   UiUpdate() {
     globalObject.ctx.font = '32px marioFont';
-    globalObject.ctx.fillStyle = 'white';
-    globalObject.ctx.fillText(`Lives ${this.lives}`, 600, 50);
-    globalObject.ctx.fillText(`Time ${this.timer}`, 800, 50);
-    globalObject.ctx.fillText(`Score ${this.score}`, 1000, 50);
+    globalObject.ctx.fillStyle = WHITE;
+    globalObject.ctx.fillText(
+      `Coins ${this.coins}`,
+      GAME_INFO_COINS_X,
+      GAME_INFO_Y
+    );
+    globalObject.ctx.fillText(
+      `Lives ${this.lives}`,
+      GAME_INFO_LIVES_X,
+      GAME_INFO_Y
+    );
+    globalObject.ctx.fillText(
+      `Time ${this.timer}`,
+      GAME_INFO_TIMER_X,
+      GAME_INFO_Y
+    );
+    globalObject.ctx.fillText(
+      `Score ${this.score}`,
+      GAME_INFO_SCORE_X,
+      GAME_INFO_Y
+    );
+    if (this.gameWin) {
+      Selectors.nightMode.style.display = NONE;
+      globalObject.ctx.fillText(WIN_MSG, WRITE_CENTER_X, WRITE_CENTER_Y);
+    }
+    if (this.gameWin === false) {
+      Selectors.nightMode.style.display = NONE;
+      globalObject.ctx.fillText(LOSE_MSG, WRITE_CENTER_X, WRITE_CENTER_Y);
+    }
   }
+  /**
+   * @desc events handler for backMenu and nightmode click
+   */
   handleEvent() {
     Selectors.mainMenu.addEventListener(CLICK_EVENT, backMenu);
     Selectors.nightMode.addEventListener(CLICK_EVENT, () => {
-      console.log('clicked');
-      if (Selectors.gameSelector.style.backgroundColor !== 'transparent') {
+      if (
+        Selectors.gameSelector.style.backgroundColor !== 'transparent' ||
+        Selectors.gameSelector.style.backgroundColor === SKY_COLOR
+      ) {
         Selectors.gameSelector.style.backgroundColor = 'transparent';
         Selectors.gameSelector.style.backgroundImage = 'none';
       } else {
-        // console.log(cloudImage);
-        // Selectors.gameSelector.style.backgroundImage =
-        //   "url('./public/assets/image/clouds.png')";
-        Selectors.gameSelector.style.backgroundColor = '#87ceeb';
+        Selectors.gameSelector.style.backgroundColor = SKY_COLOR;
+        Selectors.gameSelector.style.backgroundImage = cloudsImage.src;
       }
     });
   }
-
+  /**
+   * @desc save info in database for preset level
+   */
   async databaseScoreAppend() {
     const rawData = {
       player: globalObject.playerName,
@@ -307,8 +433,7 @@ class LevelConsumer {
       time: this.timer,
     };
     const jsonData = JSON.stringify(rawData);
-    console.log(jsonData);
-    const response = await fetch('http://127.0.0.1:5005/api/score', {
+    const response = await fetch(SCORE_API, {
       method: 'POST',
       body: jsonData,
       headers: {
@@ -318,6 +443,29 @@ class LevelConsumer {
     const data = await response.json();
     if (data.success) {
       notification('Score Saved');
+    }
+  }
+  /**
+   *
+   * @param {object} levelObject level info
+   * @desc send global message
+   */
+  async sendGlobalMessage(levelObject) {
+    const rawData = {
+      player: 'Game',
+      message: `${globalObject.playerName} scored ${this.score} playing saved level ${levelObject.level} created by ${levelObject.player}`,
+    };
+    const jsonData = JSON.stringify(rawData);
+    const response = await fetch(MESSAGE_API, {
+      method: 'POST',
+      body: jsonData,
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+    });
+    const data = await response.json();
+    if (data.success) {
+      notification('Message Sent');
     }
   }
 }

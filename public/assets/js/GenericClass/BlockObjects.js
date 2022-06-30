@@ -33,10 +33,20 @@ import {
   POWER_UP,
   POWER_UP_ID,
   MUSHROOM_SPRITE,
+  FLASHY_TREASURE_SPRITE,
+  TREASURE_FRAME_REFRESH_INTERVAL,
+  TREASURE_FRAME_INTERVAL,
 } from '../Constants.js';
 import { assetImage, tilesImage } from '../Main.js';
 
+/**
+ * class blueprint for block objects ground, bricks, treasureBox stones and so on
+ */
 class BlockObject {
+  /**
+   *
+   * @param {object} position vector for x and y , elementId for element identification and size when its from map editor
+   */
   constructor({ position, elementId, size }) {
     this.position = position;
     this.elementId = elementId;
@@ -44,7 +54,11 @@ class BlockObject {
     this.height = size ? size : TILE_HEIGHT;
     this.frame = 0;
   }
-
+  /**
+   *
+   * @param {ctx} ctx context for drawing image
+   * @desc based on element id update coordinates
+   */
   initBlock = (ctx) => {
     switch (this.elementId) {
       case 0:
@@ -125,7 +139,12 @@ class BlockObject {
         this.drawBlock(ctx, this.elementId);
     }
   };
-
+  /**
+   *
+   * @param {object} ctx context object to draw image
+   * @param {Number} element if of element
+   * @desc draw block images
+   */
   drawBlock(ctx, element) {
     this.frame += 1;
     if (element === 0) {
@@ -165,9 +184,11 @@ class BlockObject {
 
     if (this.type === TREASURE) {
       if (!this.isOpen) {
-        if (this.frame % 20 === 0) {
-          let treasureSprite = [16 * 24, 16 * 25, 16 * 26];
-          let currentFrame = (this.frame / 10) % treasureSprite.length;
+        if (this.frame % TREASURE_FRAME_INTERVAL === 0) {
+          let treasureSprite = FLASHY_TREASURE_SPRITE;
+          let currentFrame =
+            (this.frame / TREASURE_FRAME_REFRESH_INTERVAL) %
+            treasureSprite.length;
           this.spriteCoordinates[0] = treasureSprite[currentFrame];
         }
       }

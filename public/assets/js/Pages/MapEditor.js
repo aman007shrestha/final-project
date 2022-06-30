@@ -36,9 +36,17 @@ import {
   STONE_SPRITE,
   BRICK_SPRITE,
   GROUND_SPRITE,
+  MAP_EDITOR_PAGE,
+  TILES_ELEMENTS,
+  WHITE,
+  MAP_API,
+  MESSAGE_API,
 } from '../Constants.js';
 
 import Selectors from '../Utilities/DomSelector.js';
+/**
+ * Class creates Map editor Page
+ */
 class MapEditor {
   constructor() {
     this.rightClickTracker = 0;
@@ -49,7 +57,7 @@ class MapEditor {
     this.entities = [];
     this.canBeSaved = false;
     this.selectedEntityId = 0;
-    globalObject.currentPage = 'mapEditor';
+    globalObject.currentPage = MAP_EDITOR_PAGE;
     Selectors.mainMenu.style.display = 'block';
     this.canvas = document.createElement('canvas');
     this.ctx = this.canvas.getContext('2d');
@@ -58,9 +66,10 @@ class MapEditor {
     this.canvas.classList.add('editor-canvas');
     Selectors.editorCanvas = this.canvas;
     Selectors.mapEditor.appendChild(this.canvas);
+    // get default column from max width
     this.column = Math.floor(this.maxWidth / MAP_TILE_SIZE);
     this.rightOffset = this.column * MAP_TILE_SIZE - this.canvas.width;
-
+    // User input width conversion to no of columns
     Selectors.widthSelector.addEventListener('click', (e) => {
       e.preventDefault();
       this.maxWidth = Selectors.widthInput.value;
@@ -68,13 +77,14 @@ class MapEditor {
         Math.floor(Math.floor(this.maxWidth / MAP_TILE_SIZE) / 10) * 10;
       this.rightOffset = this.column * MAP_TILE_SIZE - this.canvas.width;
       this.initMap(this.column);
+      notification('New world initialised with custom width');
     });
-
+    // List of tiles to select from
     const tileSelector = document.createElement('div');
     tileSelector.classList.add('tiles-wrapper');
     Selectors.mapEditor.appendChild(tileSelector);
     Selectors.tileSelector = tileSelector;
-
+    // Nav buttons
     this.leftNavButton = this.addNavButtons(LEFT);
     this.rightNavButton = this.addNavButtons(RIGHT);
     Selectors.mapEditor.appendChild(this.leftNavButton);
@@ -86,8 +96,12 @@ class MapEditor {
     this.handleSelect();
     this.handleEvents();
   }
+  /**
+   *
+   * @desc add elementId as data attribute upon creating element of each element
+   */
   addSelectors(tileSelector) {
-    [0, 1, 2, 3, 5, 7, 8, 411, 412, 421, 422, 11].forEach((data) => {
+    TILES_ELEMENTS.forEach((data) => {
       let elementCanvas = document.createElement('canvas');
       let ctx = elementCanvas.getContext('2d');
       elementCanvas.width = EDITOR_SELECTOR_TILE_WIDTH;
@@ -103,7 +117,10 @@ class MapEditor {
       this.drawSelectors(ctx, data);
     });
   }
-
+  /**
+   *
+   * @desc add nav buttons
+   */
   addNavButtons(direction) {
     let directionButton = document.createElement('button');
     directionButton.classList.add('nav__button');
@@ -115,7 +132,11 @@ class MapEditor {
     }
     return directionButton;
   }
-
+  /**
+   *
+   * @param {Number} column in 2d array
+   * @desc initializes empty 2d array all having 0
+   */
   initMap(column) {
     this.mapData = [];
     for (let row = 0; row < ROWS_OF_TILES; row++) {
@@ -126,7 +147,9 @@ class MapEditor {
       this.mapData.push(rowData);
     }
   }
-
+  /**
+   * @desc Based on offsetX offsetY and click traker updates 2d array but upon rendering just render on canvas without modifying column value
+   */
   handleSelect() {
     this.canvas.addEventListener('click', ({ offsetX, offsetY }) => {
       let rowIndex = Math.floor(offsetY / MAP_TILE_SIZE);
@@ -155,10 +178,12 @@ class MapEditor {
     });
   }
 
+  /**
+   * @desc handle navigation event
+   * if start or end of world notify
+   */
   handleEvents() {
-    // @desc Navbuttons handling
     this.rightNavButton.addEventListener('click', () => {
-      console.log(this.mapData);
       if (this.rightOffset <= 0) {
         notification('Reached End of World');
         return;
@@ -167,8 +192,6 @@ class MapEditor {
       }
       this.rightOffset -= RIGHT_SCROLL_OFFSET;
       this.rightClickTracker += 1;
-      console.log(this.rightClickTracker);
-      console.log(this.rightOffset);
 
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.entities.forEach((entity) => {
@@ -206,6 +229,7 @@ class MapEditor {
 
     Selectors.clearMap.addEventListener('click', () => {
       this.clearMap(this);
+      notification('Map cleared');
     });
 
     Selectors.saveMap.addEventListener('click', () => {
@@ -215,11 +239,16 @@ class MapEditor {
     Selectors.mainMenu.addEventListener('click', backMenu);
   }
 
+  /**
+   *
+   * @param {Object} ctx draw image on canvas which is on dom
+   * @param {Number} data Selector id allowing to specify what entity it means
+   */
   drawSelectors(ctx, data) {
     let spriteCoordinates;
     switch (data) {
       case 0:
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = WHITE;
         ctx.fillRect(
           0,
           0,
@@ -268,13 +297,15 @@ class MapEditor {
         this.draw(ctx, tilesImage, spriteCoordinates);
         break;
       case GOOMBA_ID:
-        console.log(this.selectedEntityId);
         spriteCoordinates = GOOMBA_SPRITE;
         this.draw(ctx, assetImage, spriteCoordinates);
         break;
     }
   }
-
+  /**
+   *
+   * @desc draws image
+   */
   draw(ctx, image, spriteCoordinates) {
     ctx.drawImage(
       image,
@@ -285,7 +316,10 @@ class MapEditor {
       EDITOR_SELECTOR_TILE_WIDTH
     );
   }
-
+  /**
+   *
+   * @desc Clears map
+   */
   clearMap(object) {
     object.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     object.entities = [];
@@ -300,8 +334,7 @@ class MapEditor {
         mapData: this.mapData,
       };
       const jsonData = JSON.stringify(rawData);
-      console.log(jsonData);
-      const response = await fetch('http://127.0.0.1:5005/api/map', {
+      const response = await fetch(MAP_API, {
         method: 'POST',
         body: jsonData,
         headers: {
@@ -311,6 +344,20 @@ class MapEditor {
       const data = await response.json();
       if (data.success) {
         notification('Map Saved');
+        // Send Message for saved levels
+        const rawData = {
+          player: 'Game',
+          message: `${data.data.player} created custom level ${data.data.level}`,
+        };
+        const jsonData = JSON.stringify(rawData);
+        const response = await fetch(MESSAGE_API, {
+          method: 'POST',
+          body: jsonData,
+          headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+          },
+        });
+        await response.json();
       }
 
       this.clearMap(this);
