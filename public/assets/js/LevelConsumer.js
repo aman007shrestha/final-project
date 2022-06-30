@@ -1,12 +1,12 @@
 // @param accepts 2d array of entities id
-import BlockObject from './BlockObjects.js';
-import { Goomba } from './Enemy.js';
-import { assetImage, globalObject, cloudImage } from './Main.js';
-import { backMenu } from './Utils.js';
-import { PowerUpClass } from './PowerUp.js';
-import Mario from './Mario.js';
-import { notification } from './Utils.js';
-import eventsInput from './Events.js';
+import BlockObject from './GenericClass/BlockObjects.js';
+import { Goomba } from './EntityClass/Enemy.js';
+import { assetImage, globalObject } from './Main.js';
+import { backMenu } from './Utilities/Utils.js';
+import { PowerUpClass } from './EntityClass/PowerUp.js';
+import Mario from './EntityClass/Mario.js';
+import { notification } from './Utilities/Utils.js';
+import eventsInput from './Utilities/Events.js';
 import {
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
@@ -17,42 +17,68 @@ import {
   GAME_PAGE,
   CLICK_EVENT,
   POWER_UP_ID,
+  MARIO_INITIAL_POSITION_X,
+  MARIO_INITIAL_POSITION_Y,
 } from './Constants.js';
-import Selectors from './DomSelector.js';
+import Selectors from './Utilities/DomSelector.js';
 
+/**
+ * class responsible for entire events during a particular level
+ */
 class LevelConsumer {
+  /**
+   *
+   * @param {Array} levelMap 2d Array of position of entities by entityId
+   * @param {object} customLevel if Present , denotes this is custom level
+   */
   constructor(levelMap, customLevel) {
     this.customLevel = customLevel;
-    this.lives = DEFAULT_LIVES;
-    this.gameWin;
-    this.score = 0;
-    this.scoreSaved = false;
     this.levelMap = levelMap;
+    this.lives = DEFAULT_LIVES;
+    this.score = 0;
+    this.gameWin;
+    this.scoreSaved = false;
+    // create canvas and add to Selectors attributes gameCanvas
     this.canvas = document.createElement('canvas');
     this.canvas.height = CANVAS_HEIGHT;
     this.canvas.width = CANVAS_WIDTH;
     Selectors.gameCanvas = this.canvas;
     Selectors.gameSelector.appendChild(this.canvas);
     globalObject.canvas = this.canvas;
+    // create Context for canvas
     globalObject.ctx = globalObject.canvas.getContext('2d');
+    // pixelated images
     globalObject.ctx.imageSmoothingEnabled = false;
     globalObject.currentPage = GAME_PAGE;
     this.initObjects();
     this.handleEvent();
   }
-
+  /**
+   * @desc initializes entities for new level, also useful when mario dies to reposition it to start
+   */
   initObjects() {
+    // Collection of block objects
     this.entities = [];
+    // Collection of enemy Object
+    this.enemies = [];
+    // Collection of enemies Object
+    this.powerUps = [];
+
     this.score = 0;
     this.timer = 0;
     this.timerInterval = setInterval(() => {
       this.timer++;
     }, 1000);
-    this.enemies = [];
-    this.powerUps = [];
-    this.mario = new Mario(assetImage, 175, 0, TILE_WIDTH, TILE_HEIGHT);
+    // Create mario instance
+    this.mario = new Mario(
+      assetImage,
+      MARIO_INITIAL_POSITION_X,
+      MARIO_INITIAL_POSITION_Y,
+      TILE_WIDTH,
+      TILE_HEIGHT
+    );
+    // Intialize input events
     eventsInput.init(this.mario);
-    this.mario.draw(globalObject.ctx);
     this.levelMap.forEach((row, i) => {
       row.forEach((elementId, j) => {
         if (elementId !== 0 && (elementId <= 10 || elementId > 400)) {
@@ -103,6 +129,7 @@ class LevelConsumer {
       // Win Animation
 
       // Send Backend request to save highscore {playerName, Timing, score}
+      return;
     }
 
     if (this.lives <= 0) {
@@ -265,7 +292,7 @@ class LevelConsumer {
         Selectors.gameSelector.style.backgroundColor = 'transparent';
         Selectors.gameSelector.style.backgroundImage = 'none';
       } else {
-        console.log(cloudImage);
+        // console.log(cloudImage);
         // Selectors.gameSelector.style.backgroundImage =
         //   "url('./public/assets/image/clouds.png')";
         Selectors.gameSelector.style.backgroundColor = '#87ceeb';

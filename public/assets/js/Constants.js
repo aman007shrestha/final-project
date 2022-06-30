@@ -1,9 +1,60 @@
 export const CANVAS_HEIGHT = 600;
 export const CANVAS_WIDTH = 1200;
 
+// Mario Class
+export const MARIO = 'mario';
+export const MARIO_INITIAL_COORDINATES = [650, 5, 16, 16];
+export const MARIO_INTIAL_VELOCITY = [2, 0];
+export const MARIO_SMALL = 'small';
+export const MARIO_RESPAWN_INTERVAL = 3000;
+export const MARIO_NUMBER_OF_FRAMES = 3;
+export const MARIO_FRAME_REPEATING_INTERVAL = 24;
+export const JUMP_VELOCITY = 11.5;
+export const LEFT = 'left';
+export const RIGHT = 'right';
+
+// Utility Class
+export const GRAVITY = 0.3;
+export const NOTIFICATION_DURATION = 3000;
+
+// Preloader
+export const IMAGE_SOURCE = [
+  'tiles',
+  'castle',
+  'items',
+  'marioIntro',
+  'spritesheet',
+  'mario1',
+];
+
+// PowerUp
+export const POWER_UP_VELOCITY = [1.5, 0];
+export const POWER_UP = 'powerUp';
+
+// Goomba Coordinates
+export const GOOMBA_COORDINATES = [115, 5, 16, 16];
+export const GOOMBA_VELOCITY = [1.5, 0];
+export const GOOMBA_ANIMATION_SOURCE = [115, 131];
+export const GOOMBA_DEAD_SX = 147;
+export const GOOMBA_ANIMATION_INTERVAL = 15;
+export const GOOMBA_ANIMATION_CHANGE_INTERVAL = 5;
+
+// Events
+export const KEYDOWN = 'keydown';
+export const KEYUP = 'keyup';
+export const ARROWUP = 'ArrowUp';
+export const ARROWDOWN = 'ArrowDown';
+export const ARROWRIGHT = 'ArrowRight';
+export const ARROWLEFT = 'ArrowLeft';
 export const PRESSED = 'PRESSED';
 export const RELEASED = 'RELEASED';
+
+// Level Consumer
+export const MARIO_INITIAL_POSITION_X = 175;
+export const MARIO_INITIAL_POSITION_Y = 300;
+
 export const THRESHOLD_JUMP = 50;
+
 export const GROUND_ID = 1;
 export const BRICK_ID = 2;
 export const STONE_ID = 3;
@@ -26,8 +77,7 @@ export const EDITOR_SELECTOR_TILE_WIDTH = 40;
 export const EDITOR_CANVAS_HEIGHT = 600;
 export const EDITOR_CANVAS_WIDTH = 800;
 export const ROWS_OF_TILES = 15;
-export const LEFT = 'left';
-export const RIGHT = 'right';
+
 export const RIGHT_SCROLL_OFFSET = 400;
 export const GROUND = 'ground';
 export const BRICK = 'brick';
@@ -37,7 +87,7 @@ export const TREASURE = 'treasure';
 export const FLAG = 'flag';
 export const ENEMY = 'enemy';
 export const GOOMBA = 'goomba';
-export const POWER_UP = 'powerUp';
+
 export const SKYCOLOR = '#87ceeb';
 export const BOUNCE_BACK = -3;
 export const DEAD_JUMP = -5;
@@ -71,7 +121,7 @@ export const FLAG_SPRITE = [16 * 16, 16 * 8, SPRITE_WIDTH, SPRITE_HEIGHT];
 export const FLAGPOLE_SPRITE = [16 * 16, 16 * 9, SPRITE_WIDTH, SPRITE_HEIGHT];
 export const GOOMBA_SPRITE = [115, 5, SPRITE_WIDTH, SPRITE_HEIGHT];
 export const MUSHROOM_SPRITE = [625, 5, SPRITE_WIDTH, SPRITE_HEIGHT];
-export const marioSprite = {
+export const MARIO_SPRITE = {
   small: {
     stand: {
       right: [651, 5, 16, 16],
@@ -115,8 +165,6 @@ export const marioSprite = {
     dead: [748, 5, 16, 16],
   },
 };
-import { cloudImage } from './Main.js';
-export const cloudsOrientation = [[0, 0, 64, 24, 200, 350, 64, 24]];
 export default {
   CANVAS_HEIGHT: 800,
 };

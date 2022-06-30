@@ -33,8 +33,8 @@ import {
   POWER_UP,
   POWER_UP_ID,
   MUSHROOM_SPRITE,
-} from './Constants.js';
-import { assetImage, tilesImage } from './Main.js';
+} from '../Constants.js';
+import { assetImage, tilesImage } from '../Main.js';
 
 class BlockObject {
   constructor({ position, elementId, size }) {

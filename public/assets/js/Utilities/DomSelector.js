@@ -1,3 +1,7 @@
+/**
+ * @desc holds all the dom selectors
+ */
+
 const Selectors = {
   gameSelector: document.getElementById('main-game'),
   preloaderSelector: document.querySelector('.preloader'),

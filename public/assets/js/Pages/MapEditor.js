@@ -1,7 +1,7 @@
-import { tilesImage, assetImage } from './Main.js';
-import BlockObject from './BlockObjects.js';
-import { globalObject } from './Main.js';
-import { notification, backMenu } from './Utils.js';
+import { tilesImage, assetImage } from '../Main.js';
+import BlockObject from '../GenericClass/BlockObjects.js';
+import { globalObject } from '../Main.js';
+import { notification, backMenu } from '../Utilities/Utils.js';
 import {
   PIPE_BOTTOM_LEFT_ID,
   PIPE_BOTTOM_RIGHT_ID,
@@ -36,9 +36,9 @@ import {
   STONE_SPRITE,
   BRICK_SPRITE,
   GROUND_SPRITE,
-} from './Constants.js';
+} from '../Constants.js';
 
-import Selectors from './DomSelector.js';
+import Selectors from '../Utilities/DomSelector.js';
 class MapEditor {
   constructor() {
     this.rightClickTracker = 0;

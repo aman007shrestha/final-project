@@ -1,5 +1,5 @@
-import { Vector } from './Maths.js';
-import { globalObject } from './Main.js';
+import { Vector } from '../Utilities/Maths.js';
+import { globalObject } from '../Main.js';
 import {
   BOUNCE_BACK,
   BRICK,
@@ -10,7 +10,7 @@ import {
   PIPE,
   STONE,
   TREASURE,
-} from './Constants.js';
+} from '../Constants.js';
 
 // @desc takes image off the spriteSheet along with name of object and the location of where to draw the image
 class GenericMovableObject {

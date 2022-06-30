@@ -1,3 +1,6 @@
+/**
+ * Class creates sprite object consisting of source properties
+ */
 class Sprite {
   constructor(image, sourcex, sourcey, sourcew, sourceh) {
     this.image = image;

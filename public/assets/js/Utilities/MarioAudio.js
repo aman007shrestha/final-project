@@ -1,3 +1,7 @@
+/*
+ * Class MarioAudio - an object holding all the sounds attributes
+ */
+
 class MarioAudio {
   constructor() {
     this.bump = new Audio('./assets/sounds/bump.wav');

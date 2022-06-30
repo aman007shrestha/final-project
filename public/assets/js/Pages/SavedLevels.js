@@ -1,8 +1,8 @@
-import Selectors from './DomSelector.js';
-import { Game } from './Main.js';
-import { globalObject } from './Main.js';
-import { notification, backMenu } from './Utils.js';
-import { CLICK_EVENT, NONE } from './Constants.js';
+import Selectors from '../Utilities/DomSelector.js';
+import { Game } from '../Main.js';
+import { globalObject } from '../Main.js';
+import { notification, backMenu } from '../Utilities/Utils.js';
+import { CLICK_EVENT, NONE } from '../Constants.js';
 
 class SavedLevel {
   constructor() {
