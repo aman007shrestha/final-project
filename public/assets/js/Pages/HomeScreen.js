@@ -159,7 +159,7 @@ class HomeScreen {
     });
     const responseData = await response.json();
     this.messageData = responseData.data;
-    this.renderMessage(this.messageData.reverse());
+    await this.renderMessage(this.messageData.reverse());
   }
   /**
    *
@@ -195,7 +195,7 @@ class HomeScreen {
    * @param {Array} data array of data for Messages
    * @desc render messages be it from game or from player
    */
-  renderMessage(data) {
+  async renderMessage(data) {
     Selectors.messageBox.classList.add('message-box');
     const messageTop = document.createElement('div');
     Selectors.messageBox.appendChild(messageTop);
@@ -228,8 +228,12 @@ class HomeScreen {
     formWrapper.appendChild(Selectors.inputField);
     const sendButton = document.createElement('button');
     sendButton.innerHTML = 'SEND';
-    sendButton.addEventListener('click', (e) => {
-      this.sendMessage(e);
+    sendButton.addEventListener('click', async(e) => {
+      const messageData = await this.sendMessage(e);
+      Selectors.messageScoreWrapper.removeChild(Selectors.messageBox)
+      Selectors.messageBox = document.createElement('div');
+      Selectors.messageScoreWrapper.appendChild(Selectors.messageBox);
+      this.renderMessage(messageData)
     });
     formWrapper.appendChild(sendButton);
     Selectors.messageBox.appendChild(formWrapper);
@@ -254,7 +258,9 @@ class HomeScreen {
       notification('Message Sent');
       Selectors.inputField.value = '';
       this.messageData.push(rawData);
+      this.messageData.shift();
     }
+    return this.messageData
   }
 }
 export default HomeScreen;
